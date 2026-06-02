@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from .models import ProbeSample
+from .serializers import ProbeSampleSerializer
+
+
+class ProbeSampleViewSet(viewsets.ModelViewSet):
+    queryset = ProbeSample.objects.all()
+    serializer_class = ProbeSampleSerializer

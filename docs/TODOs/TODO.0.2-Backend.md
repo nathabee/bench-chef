@@ -347,3 +347,168 @@ git status
 git add .
 git commit -m '0.2.0 - Add connection profile foundation'
 ```
+
+
+ 
+## TODO 0.2.1 — Probe Sample Foundation
+
+### Purpose
+
+Add the first model for storing black-box probe measurements.
+
+A `ProbeSample` represents one observed HTTP request made by BenchChef against an external target, usually SpaghettiChef.
+
+This step stores probe results only. It does not yet execute probes automatically.
+
+### Work To Do
+
+#### 1. Add `ProbeSample` model
+
+Create or replace:
+
+```text
+backend-django/probes/models.py
+```
+ 
+
+#### 2. Create and apply migration
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+#### 3. Register model in Django admin
+
+Create or replace:
+
+```text
+backend-django/probes/admin.py
+```
+ 
+
+#### 4. Add serializer
+
+Create:
+
+```text
+backend-django/probes/serializers.py
+```
+ 
+
+#### 5. Add REST API views
+
+Create or replace:
+
+```text
+backend-django/probes/views.py
+```
+ 
+
+#### 6. Add app routes
+
+Create:
+
+```text
+backend-django/probes/urls.py
+```
+ 
+
+#### 7. Register routes in project URLs
+
+Update:
+
+```text
+backend-django/benchchef/urls.py
+```
+ 
+
+#### 8. Verify API behavior
+
+Start backend:
+
+```bash
+python manage.py runserver 0.0.0.0:18090
+```
+
+List samples:
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/
+```
+
+Create sample:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/probe-samples/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "method": "GET",
+    "url": "http://localhost:18080/health",
+    "status_code": 200,
+    "latency_ms": 42,
+    "timed_out": false,
+    "success": true,
+    "error_message": ""
+  }'
+```
+
+Detail sample:
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/1/
+```
+
+Update sample:
+
+```bash
+curl -fsS \
+  -X PUT \
+  http://localhost:18090/api/probe-samples/1/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "method": "GET",
+    "url": "http://localhost:18080/health",
+    "status_code": 503,
+    "latency_ms": 1500,
+    "timed_out": false,
+    "success": false,
+    "error_message": "Service unavailable"
+  }'
+```
+
+Delete sample:
+
+```bash
+curl -fsS \
+  -X DELETE \
+  http://localhost:18090/api/probe-samples/1/
+```
+
+### Acceptance Criteria
+
+```text
+ProbeSample model exists
+database migration succeeds
+model visible in Django admin
+serializer exists
+REST endpoints exist
+GET /api/probe-samples/ works
+POST /api/probe-samples/ works
+GET /api/probe-samples/{id}/ works
+PUT /api/probe-samples/{id}/ works
+DELETE /api/probe-samples/{id}/ works
+sample stores URL, method, status code, latency, timeout state, success state, error message
+backend starts successfully
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m '0.2.1 - Add probe sample foundation'
+```
+ 
