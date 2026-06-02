@@ -1,0 +1,47 @@
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+  font-family: Arial, sans-serif;
+  background: #f5f7fb;
+}
+
+.sidebar {
+  width: 260px;
+  padding: 24px;
+  background: #111827;
+  color: white;
+}
+
+.brand h1 {
+  margin: 0;
+  font-size: 28px;
+}
+
+.brand p {
+  margin: 6px 0 28px;
+  color: #9ca3af;
+}
+
+nav {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+nav a {
+  color: #d1d5db;
+  text-decoration: none;
+  padding: 10px 12px;
+  border-radius: 8px;
+}
+
+nav a.active,
+nav a:hover {
+  background: #1f2937;
+  color: white;
+}
+
+.content {
+  flex: 1;
+  padding: 32px;
+}
