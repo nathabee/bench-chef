@@ -1,6 +1,10 @@
-# TODO 0.1.0 — BenchChef Repository Skeleton
+# 0.1.x TODO
 
-## Purpose
+
+
+## TODO 0.1.0 — BenchChef Repository Skeleton
+
+### Purpose
 
 Create the clean BenchChef repository structure.
 
@@ -16,7 +20,7 @@ generated reports
 documentation
 ````
 
-## Starting State
+### Starting State
 
 ```text
 bench-chef/
@@ -25,9 +29,9 @@ bench-chef/
 └── README.md
 ```
 
-## Work To Do
+### Work To Do
 
-### 1. Create project directories
+#### 1. Create project directories
 
 ```bash
 mkdir -p backend-django
@@ -40,7 +44,7 @@ mkdir -p reports
 mkdir -p docs
 ```
 
-### 2. Add placeholder files
+#### 2. Add placeholder files
 
 ```bash
 touch backend-django/.gitkeep
@@ -52,16 +56,16 @@ touch scenarios/.gitkeep
 touch reports/.gitkeep
 ```
 
-### 3. Add `.gitignore`
+#### 3. Add `.gitignore`
 
 ```bash
 cat > .gitignore <<'EOF'
-# OS / editor
+## OS / editor
 .DS_Store
 .idea/
 .vscode/
 
-# Python / Django
+## Python / Django
 __pycache__/
 *.py[cod]
 .venv/
@@ -71,24 +75,24 @@ env/
 db.sqlite3
 .env
 
-# Node / Angular
+## Node / Angular
 node_modules/
 dist/
 .angular/
 npm-debug.log*
 package-lock.json
 
-# Reports generated locally
+## Reports generated locally
 reports/*
 !reports/.gitkeep
 
-# Local runtime data
+## Local runtime data
 tmp/
 logs/
 EOF
 ```
 
-### 4. Add `.env.example`
+#### 4. Add `.env.example`
 
 ```bash
 cat > .env.example <<'EOF'
@@ -104,7 +108,7 @@ GRAFANA_PORT=3000
 EOF
 ```
 
-### 5. Add initial `docker-compose.yml`
+#### 5. Add initial `docker-compose.yml`
 
 ```bash
 cat > docker-compose.yml <<'EOF'
@@ -130,7 +134,7 @@ services:
 EOF
 ```
 
-### 6. Add initial Prometheus config
+#### 6. Add initial Prometheus config
 
 ```bash
 cat > prometheus/prometheus.yml <<'EOF'
@@ -144,12 +148,12 @@ scrape_configs:
 EOF
 ```
 
-### 7. Update `README.md`
+#### 7. Update `README.md`
 
 Use this short version for now:
 
 ````markdown
-# BenchChef
+## BenchChef
 
 BenchChef is a performance supervision and benchmark workbench for SpaghettiChef.
 
@@ -157,7 +161,7 @@ SpaghettiChef remains the operational product.
 
 BenchChef observes SpaghettiChef from outside, measures performance, stores benchmark results, and visualizes metrics through Prometheus and Grafana.
 
-## Architecture
+### Architecture
 
 ```text
 BenchChef
@@ -169,16 +173,9 @@ BenchChef
 ├── reports/
 └── docs/
 ````
+ 
 
-## Current Goal
-
-0.1.0 creates the repository skeleton.
-
-No SpaghettiChef runtime action is triggered in this version.
-
-````
-
-## Acceptance Criteria
+### Acceptance Criteria
 
 ```text
 repository has clean component directories
@@ -189,15 +186,8 @@ docker-compose.yml exists
 .env.example exists
 README explains the project boundary
 git status is clean after commit
-````
-
-## Suggested commit
-
-```bash
-git status
-git add .
-git commit -m "Initialize BenchChef project skeleton"
 ```
 
-```
-```
+ 
+
+##
