@@ -442,3 +442,284 @@ python manage.py startapp benchmarks
 python manage.py startapp reports
 ```
  
+## TODO 0.1.2 — Angular Frontend Bootstrap
+
+### Purpose
+
+Create the initial Angular frontend inside `frontend-angular/`.
+
+This step only bootstraps the user interface shell. It does not yet connect to the Django backend or to SpaghettiChef.
+
+### Work To Do
+
+### 1. Create Angular application
+
+From the repository root:
+
+```bash
+cd ~/coding/github/bench-chef
+rm -rf frontend-angular/.gitkeep
+npx @angular/cli new frontend-angular --routing --style=css
+````
+
+When Angular asks about server-side rendering, answer:
+
+```text
+No
+```
+
+### 2. Start Angular development server
+
+```bash
+cd frontend-angular
+npm install zone.js
+npm start
+```
+
+Expected local URL:
+
+```text
+http://localhost:4200
+```
+
+### 3. Set application title
+
+Set the visible application title to:
+
+```text
+BenchChef
+```
+
+In Angular, set it in:
+
+```text
+frontend-angular/src/app/app.html
+```
+
+Replace the default content.
+After changing the name of the App it is necessary to modify and adapt the app.spec.ts
+
+
+ 
+### 4. Generate initial Angular pages, components, and services
+
+From the Angular project folder:
+
+```bash
+cd ~/coding/github/bench-chef/frontend-angular
+
+ng generate component pages/dashboard
+ng generate component pages/connections
+ng generate component pages/probes
+ng generate component pages/benchmarks
+ng generate component pages/reports
+ng generate component pages/settings
+
+ng generate component components/status-card
+ng generate component components/metric-card
+ng generate component components/run-summary-card
+
+ng generate service services/backend-api
+ng generate service services/connection-api
+ng generate service services/probe-api
+```
+
+### 5. Configure application routes
+
+Edit:
+
+```text
+frontend-angular/src/app/app.routes.ts
+```
+
+Use:
+
+```ts
+import { Routes } from '@angular/router';
+
+import { Dashboard } from './pages/dashboard/dashboard';
+import { Connections } from './pages/connections/connections';
+import { Probes } from './pages/probes/probes';
+import { Benchmarks } from './pages/benchmarks/benchmarks';
+import { Reports } from './pages/reports/reports';
+import { Settings } from './pages/settings/settings';
+
+export const routes: Routes = [
+  { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
+  { path: 'dashboard', component: Dashboard },
+  { path: 'connections', component: Connections },
+  { path: 'probes', component: Probes },
+  { path: 'benchmarks', component: Benchmarks },
+  { path: 'reports', component: Reports },
+  { path: 'settings', component: Settings },
+  { path: '**', redirectTo: 'dashboard' },
+];
+```
+
+you need to update the app.ts to make routing active:
+
+```ts
+import { Component } from '@angular/core';
+import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+
+@Component({
+  selector: 'app-root',
+  imports: [RouterOutlet, RouterLink, RouterLinkActive],
+  templateUrl: './app.html',
+  styleUrl: './app.css',
+})
+export class App {}
+```
+
+and app.config.ts , called from the main.ts must provide the router:
+
+```ts
+
+import { ApplicationConfig, provideBrowserGlobalErrorListeners, provideZoneChangeDetection } from '@angular/core';
+import { provideRouter } from '@angular/router';
+
+import { routes } from './app.routes';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideBrowserGlobalErrorListeners(),
+    provideZoneChangeDetection({ eventCoalescing: true }),
+    provideRouter(routes),
+  ],
+};
+
+```
+
+
+### 6. Replace the default app shell
+
+Edit:
+
+```text
+frontend-angular/src/app/app.html
+```
+
+Use:
+
+```html
+<div class="app-shell">
+  <aside class="sidebar">
+    <div class="brand">
+      <h1>BenchChef</h1>
+      <p>Performance Workbench</p>
+    </div>
+
+    <nav>
+      <a routerLink="/dashboard" routerLinkActive="active">Dashboard</a>
+      <a routerLink="/connections" routerLinkActive="active">Connections</a>
+      <a routerLink="/probes" routerLinkActive="active">Probes</a>
+      <a routerLink="/benchmarks" routerLinkActive="active">Benchmarks</a>
+      <a routerLink="/reports" routerLinkActive="active">Reports</a>
+      <a routerLink="/settings" routerLinkActive="active">Settings</a>
+    </nav>
+  </aside>
+
+  <main class="content">
+    <router-outlet></router-outlet>
+  </main>
+</div>
+```
+
+### 7. Add simple placeholder page content
+
+Each generated page should show:
+
+```text
+page title
+short purpose text
+Planned
+```
+
+Use this content idea:
+
+```text
+Dashboard
+Overview of BenchChef status, probe results, and benchmark summaries.
+
+Connections
+SpaghettiChef connection profiles and connection status.
+
+Probes
+Black-box probes for backend, dashboard, and camera-job responsiveness.
+
+Benchmarks
+Repeatable benchmark scenarios and run history.
+
+Reports
+Generated benchmark reports and export links.
+
+Settings
+Local BenchChef configuration.
+```
+
+### 8. Keep Angular independent for now
+
+Do not call Django yet.
+
+Do not call SpaghettiChef yet.
+
+This step is only the frontend shell.
+
+### 9. Verify frontend works
+
+Run:
+
+```bash
+cd frontend-angular
+
+ng serve --open
+```
+
+Open:
+
+```text
+http://localhost:4200
+```
+
+Also check:
+
+```text
+http://localhost:4200/dashboard
+http://localhost:4200/connections
+http://localhost:4200/probes
+http://localhost:4200/benchmarks
+http://localhost:4200/reports
+http://localhost:4200/settings
+```
+
+Expected result:
+
+```text
+/ redirects to /dashboard
+all navigation links work
+all placeholder pages render
+```
+
+### Acceptance Criteria
+
+```text
+Angular application exists inside frontend-angular
+Angular development server starts on port 4200
+application title is BenchChef
+navigation exists
+placeholder pages exist
+routes exist for dashboard, connections, probes, benchmarks, reports, settings
+no backend API call is implemented yet
+no SpaghettiChef API call is implemented yet
+npm start works
+git status is clean after commit
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m "0.1.2 - Bootstrap Angular frontend"
+```
+ 
