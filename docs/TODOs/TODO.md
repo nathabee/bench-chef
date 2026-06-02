@@ -20,6 +20,14 @@ TODO 0.1.1 — Django Backend Bootstrap
 - install Django
 - install Django REST Framework
 - create Django project
+backend-django/
+├── benchchef/          # Django project config: settings, urls, wsgi/asgi
+├── accounts/           # later: users, roles, authentication
+├── connections/        # SpaghettiChef connection profiles
+├── probes/             # black-box HTTP probes and probe samples
+├── benchmarks/         # benchmark runs, scenarios, run status
+├── reports/            # generated reports and exports
+└── manage.py
 - add requirements.txt
 - add backend .env.example if needed
 - add GET /api/health
