@@ -675,3 +675,205 @@ git add .
 git commit -m '0.2.3 - Add benchmark run foundation'
 ```
  
+
+---
+
+## TODO 0.2.3 — Report Record Foundation
+
+### Purpose
+
+Add the first persistent model for BenchChef report metadata.
+
+A `ReportRecord` represents a generated or planned benchmark report.
+
+This step stores report metadata only. It does not yet generate report files.
+
+### Work To Do
+
+#### 1. Add `ReportRecord` model
+
+Create or replace:
+
+```text
+backend-django/reports/models.py
+```
+ 
+
+#### 2. Create and apply migration
+
+```bash
+cd ~/coding/github/bench-chef/backend-django
+source .venv/bin/activate
+
+python manage.py makemigrations
+python manage.py migrate
+```
+
+#### 3. Register model in Django admin
+
+Create or replace:
+
+```text
+backend-django/reports/admin.py
+```
+ 
+
+#### 4. Add serializer
+
+Create:
+
+```text
+backend-django/reports/serializers.py
+```
+ 
+
+#### 5. Add REST API views
+
+Create or replace:
+
+```text
+backend-django/reports/views.py
+```
+ 
+
+#### 6. Add app routes
+
+Create:
+
+```text
+backend-django/reports/urls.py
+```
+ 
+
+#### 7. Register routes in project URLs
+
+Update:
+
+```text
+backend-django/benchchef/urls.py
+```
+
+Add:
+
+```python
+path('api/', include('reports.urls')),
+```
+
+ 
+
+#### 8. Verify API behavior
+
+Start backend:
+
+```bash
+python manage.py runserver 0.0.0.0:18090
+```
+
+List report records:
+
+```bash
+curl -fsS http://localhost:18090/api/report-records/
+```
+
+Create report record:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/report-records/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Health Probe Smoke Report",
+    "report_type": "PROBE",
+    "status": "CREATED",
+    "output_format": "MARKDOWN",
+    "file_path": "reports/health-probe-smoke-report.md",
+    "message": "Initial report placeholder"
+  }'
+```
+
+Detail report record:
+
+```bash
+curl -fsS http://localhost:18090/api/report-records/1/
+```
+
+Update report record:
+
+```bash
+curl -fsS \
+  -X PUT \
+  http://localhost:18090/api/report-records/1/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Health Probe Smoke Report",
+    "report_type": "PROBE",
+    "status": "READY",
+    "output_format": "MARKDOWN",
+    "file_path": "reports/health-probe-smoke-report.md",
+    "message": "Report metadata marked ready manually"
+  }'
+```
+
+Delete report record:
+
+```bash
+curl -fsS \
+  -X DELETE \
+  http://localhost:18090/api/report-records/1/
+```
+
+### Browser Verification
+
+Open Django admin:
+
+```text
+http://localhost:18090/admin
+```
+
+Check:
+
+```text
+Report records is visible
+you can add a report record
+you can save it
+it appears in the list
+```
+
+Example values:
+
+```text
+Title: Health Probe Smoke Report
+Report type: Probe
+Status: Created
+Output format: Markdown
+File path: reports/health-probe-smoke-report.md
+Message: Initial report placeholder
+```
+
+### Acceptance Criteria
+
+```text
+ReportRecord model exists
+database migration succeeds
+model visible in Django admin
+serializer exists
+REST endpoints exist
+GET /api/report-records/ works
+POST /api/report-records/ works
+GET /api/report-records/{id}/ works
+PUT /api/report-records/{id}/ works
+DELETE /api/report-records/{id}/ works
+record stores title, report type, status, output format, file path, message
+backend starts successfully
+no report generation logic is implemented yet
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m '0.2.3 - Add report record foundation'
+```
+ 
