@@ -1,0 +1,29 @@
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Python / Django
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.sqlite3
+db.sqlite3
+.env
+
+# Node / Angular
+node_modules/
+dist/
+.angular/
+npm-debug.log*
+package-lock.json
+
+# Reports generated locally
+reports/*
+!reports/.gitkeep
+
+# Local runtime data
+tmp/
+logs/
