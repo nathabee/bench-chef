@@ -86,28 +86,4 @@ backend-django/
 
  
 ---
-## TODO 0.3 — SpaghettiChef Connection And Black-Box Probing
-
-TODO 0.2.0
-- create Django apps: connections, probes, benchmarks, reports
-- add ConnectionProfile model
-- add Django admin registration
-- add serializers
-- add basic REST endpoints
-
-TODO 0.2.1
-- add ProbeSample model
-- store URL, method, status code, latency, timeout, error message
-- expose probe samples through API
-
-TODO 0.2.2
-- add BenchmarkRun model
-- add BenchmarkRun status lifecycle
-- expose benchmark run list/detail API
-
-TODO 0.3.0
-- implement SpaghettiChef connection test
-- call /health
-- call /version
-- call /monitoring
-- store status, latency, error message
+ 

@@ -8,7 +8,14 @@ BenchChef is designed to observe, measure, and analyze a running SpaghettiChef i
 
 ## Related Project
 
-BenchChef is built to work with **SpaghettiChef**.
+BenchChef is designed to work with **SpaghettiChef**.
+
+SpaghettiChef is the operational runtime responsible for printer/camera execution, dashboard/API behavior, and image-processing workflows.
+
+Related repository:
+
+[SpaghettiChef on GitHub](https://github.com/nathabee/spaghetti-chef)
+
 
 SpaghettiChef is the operational runtime responsible for:
 
@@ -20,11 +27,7 @@ SpaghettiChef is the operational runtime responsible for:
 
 BenchChef is the complementary supervision and benchmark layer.
 
-GitHub project:
-
-```text
-https://github.com/nathabee/spaghetti-chef
-```
+ 
 
 ## Purpose
 
@@ -156,10 +159,4 @@ docker compose down
 
 ## License
 
-BenchChef is distributed under the terms of the **MIT License**.
-
-See:
-
-```text
-LICENSE
-```
+BenchChef is distributed under the terms of the [MIT License](LICENSE).
