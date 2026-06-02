@@ -8,4 +8,5 @@ urlpatterns = [
     path('api/health', health_check, name='api-health'),
     path('api/', include('probes.urls')),
     path('api/', include('connections.urls')),
+    path('api/', include('benchmarks.urls')),
 ]

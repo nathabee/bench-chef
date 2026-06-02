@@ -1,3 +1,9 @@
-from django.shortcuts import render
+from rest_framework import viewsets
 
-# Create your views here.
+from .models import BenchmarkRun
+from .serializers import BenchmarkRunSerializer
+
+
+class BenchmarkRunViewSet(viewsets.ModelViewSet):
+    queryset = BenchmarkRun.objects.all()
+    serializer_class = BenchmarkRunSerializer

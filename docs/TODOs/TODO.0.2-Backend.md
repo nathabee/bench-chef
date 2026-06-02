@@ -512,3 +512,166 @@ git add .
 git commit -m '0.2.1 - Add probe sample foundation'
 ```
  
+---
+## TODO 0.2.2 — Benchmark Run Foundation
+
+### Purpose
+
+Add the first persistent model for BenchChef benchmark runs.
+
+A `BenchmarkRun` represents one planned, running, completed, failed, or cancelled benchmark scenario.
+
+This step stores benchmark run metadata only. It does not yet execute benchmark scenarios.
+
+### Work To Do
+
+#### 1. Add `BenchmarkRun` model
+
+Create or replace:
+
+```text
+backend-django/benchmarks/models.py
+```
+ 
+
+#### 2. Create and apply migration
+
+```bash
+python manage.py makemigrations
+python manage.py migrate
+```
+
+#### 3. Register model in Django admin
+
+Create or replace:
+
+```text
+backend-django/benchmarks/admin.py
+```
+ 
+
+#### 4. Add serializer
+
+Create:
+
+```text
+backend-django/benchmarks/serializers.py
+```
+  
+
+#### 5. Add REST API views
+
+Create or replace:
+
+```text
+backend-django/benchmarks/views.py
+```
+ 
+
+#### 6. Add app routes
+
+Create:
+
+```text
+backend-django/benchmarks/urls.py
+```
+ 
+
+#### 7. Register routes in project URLs
+
+Update:
+
+```text
+backend-django/benchchef/urls.py
+```
+
+ 
+
+#### 8. Verify API behavior
+
+Start backend:
+
+```bash
+python manage.py runserver 0.0.0.0:18090
+```
+
+List benchmark runs:
+
+```bash
+curl -fsS http://localhost:18090/api/benchmark-runs/
+```
+
+Create benchmark run:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/benchmark-runs/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Health endpoint smoke benchmark",
+    "scenario_name": "HEALTH_PROBE",
+    "status": "CREATED",
+    "target_base_url": "http://localhost:18080",
+    "message": "Initial benchmark run placeholder"
+  }'
+```
+
+Detail benchmark run:
+
+```bash
+curl -fsS http://localhost:18090/api/benchmark-runs/1/
+```
+
+Update benchmark run:
+
+```bash
+curl -fsS \
+  -X PUT \
+  http://localhost:18090/api/benchmark-runs/1/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Health endpoint smoke benchmark",
+    "scenario_name": "HEALTH_PROBE",
+    "status": "COMPLETED",
+    "target_base_url": "http://localhost:18080",
+    "started_at": "2026-06-02T12:00:00Z",
+    "finished_at": "2026-06-02T12:01:00Z",
+    "message": "Placeholder run completed manually"
+  }'
+```
+
+Delete benchmark run:
+
+```bash
+curl -fsS \
+  -X DELETE \
+  http://localhost:18090/api/benchmark-runs/1/
+```
+
+### Acceptance Criteria
+
+```text
+BenchmarkRun model exists
+status lifecycle exists: CREATED, QUEUED, RUNNING, COMPLETED, FAILED, CANCELLED
+database migration succeeds
+model visible in Django admin
+serializer exists
+REST endpoints exist
+GET /api/benchmark-runs/ works
+POST /api/benchmark-runs/ works
+GET /api/benchmark-runs/{id}/ works
+PUT /api/benchmark-runs/{id}/ works
+DELETE /api/benchmark-runs/{id}/ works
+backend starts successfully
+no benchmark execution logic is implemented yet
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m '0.2.3 - Add benchmark run foundation'
+```
+ 
