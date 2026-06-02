@@ -877,3 +877,192 @@ git add .
 git commit -m '0.2.3 - Add report record foundation'
 ```
  
+---
+## TODO 0.2.4 — Connection Probe Configuration
+
+### Purpose
+
+Extend `ConnectionProfile` so BenchChef can store the SpaghettiChef target configuration in the database.
+
+This allows the connection to be edited in Django admin now, and later from the Angular UI.
+
+`.env` should only provide optional defaults. The real active connection should be stored in `ConnectionProfile`.
+
+### Work To Do
+
+#### 1. Extend `ConnectionProfile`
+
+Update:
+
+```text
+backend-django/connections/models.py
+````
+
+ 
+
+#### 2. Create and apply migration
+
+```bash
+cd ~/coding/github/bench-chef/backend-django
+source .venv/bin/activate
+
+python manage.py makemigrations
+python manage.py migrate
+```
+
+#### 3. Update serializer
+
+Update:
+
+```text
+backend-django/connections/serializers.py
+```
+
+ 
+
+#### 4. Update Django admin
+
+Update:
+
+```text
+backend-django/connections/admin.py
+```
+
+Add these fields to `list_display`:
+
+```text
+health_path
+request_timeout_ms
+```
+
+Add these fields to editable admin form through `fieldsets` or normal model fields:
+
+```text
+health_path
+version_path
+monitoring_path
+dashboard_index_path
+request_timeout_ms
+```
+
+#### 5. Verify in Django admin
+
+Start backend:
+
+```bash
+python manage.py runserver 0.0.0.0:18090
+```
+
+Open:
+
+```text
+http://localhost:18090/admin
+```
+
+Edit or create a connection profile:
+
+```text
+Name: Local SpaghettiChef
+Base url: http://localhost:18080
+Role header: ADMIN
+Enabled: checked
+Health path: /health
+Version path: /version
+Monitoring path: /monitoring
+Dashboard index path: /dashboard/index.html
+Request timeout ms: 3000
+```
+
+#### 6. Verify through API
+
+List connections:
+
+```bash
+curl -fsS http://localhost:18090/api/connections/
+```
+
+Create a connection if needed:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "name": "Local SpaghettiChef",
+    "base_url": "http://localhost:18080",
+    "role_header": "ADMIN",
+    "enabled": true,
+    "health_path": "/health",
+    "version_path": "/version",
+    "monitoring_path": "/monitoring",
+    "dashboard_index_path": "/dashboard/index.html",
+    "request_timeout_ms": 3000
+  }'
+```
+ 
+#### 7. Add default connection initialization command
+
+Create folders:
+
+```bash
+mkdir -p connections/management/commands
+touch connections/management/__init__.py
+touch connections/management/commands/__init__.py
+````
+
+Create:
+
+```text
+backend-django/connections/management/commands/init_default_connection.py
+```
+ 
+Run:
+
+```bash
+python manage.py init_default_connection
+```
+
+Verify:
+
+```bash
+curl -fsS http://localhost:18090/api/connections/
+```
+
+Expected: one default line exists:
+
+```text
+Local SpaghettiChef
+http://localhost:18080
+```
+
+### Acceptance Criteria
+
+```text
+management command init_default_connection exists
+command creates or updates Local SpaghettiChef profile
+command is idempotent
+default connection appears in Django admin
+default connection appears in GET /api/connections/
+ConnectionProfile stores health_path
+ConnectionProfile stores version_path
+ConnectionProfile stores monitoring_path
+ConnectionProfile stores dashboard_index_path
+ConnectionProfile stores request_timeout_ms
+Django migration succeeds
+Django admin shows the new fields
+REST serializer exposes the new fields
+GET /api/connections/ returns the new fields
+POST /api/connections/ accepts the new fields
+SpaghettiChef target can be configured without editing .env
+```
+
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m '0.2.4 - Add connection probe configuration'
+```
+  
