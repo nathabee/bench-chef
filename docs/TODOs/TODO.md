@@ -1,6 +1,10 @@
-TODO 0.1.x — Project Foundation
+TODO overviews
 
-TODO 0.1.0 — Repository Skeleton
+---
+
+## TODO 0.1.x — Project Foundation
+
+### TODO 0.1.0 — Repository Skeleton
 - create repository benchchef
 - create backend-django/
 - create frontend-angular/
@@ -15,7 +19,7 @@ TODO 0.1.0 — Repository Skeleton
 - add .gitignore
 - commit skeleton
 
-TODO 0.1.1 — Django Backend Bootstrap
+### TODO 0.1.1 — Django Backend Bootstrap
 - create Python virtual environment in backend-django/
 - install Django
 - install Django REST Framework
@@ -34,7 +38,7 @@ backend-django/
 - verify python manage.py runserver works
 - commit Django bootstrap
 
-TODO 0.1.2 — Angular Frontend Bootstrap
+### TODO 0.1.2 — Angular Frontend Bootstrap
 - create Angular app inside frontend-angular/
 - add base layout
 - add app title BenchChef
@@ -49,7 +53,7 @@ TODO 0.1.2 — Angular Frontend Bootstrap
 - verify npm start works
 - commit Angular bootstrap
 
-TODO 0.1.3 — Local Stack Smoke Test
+### TODO 0.1.3 — Local Stack Smoke Test
 - add basic Prometheus config
 - add basic Grafana provisioning folders
 - make docker compose start Prometheus and Grafana
@@ -58,30 +62,31 @@ TODO 0.1.3 — Local Stack Smoke Test
 - document local startup commands
 - commit monitoring stack bootstrap
 
+---
 
 
-TODO 0.2 BenchChef Backend Domain Foundation
+## TODO 0.2 BenchChef Backend Domain Foundation
 
-TODO 0.2.0
+### TODO 0.2.0
 - create Django apps: connections, probes, benchmarks, reports
 - add ConnectionProfile model
 - add Django admin registration
 - add serializers
 - add basic REST endpoints
 
-TODO 0.2.1
+### TODO 0.2.1
 - add ProbeSample model
 - store URL, method, status code, latency, timeout, error message
 - expose probe samples through API
 
-TODO 0.2.2
+### TODO 0.2.2
 - add BenchmarkRun model
 - add BenchmarkRun status lifecycle
 - expose benchmark run list/detail API
 
  
-
-TODO 0.3 — SpaghettiChef Connection And Black-Box Probing
+---
+## TODO 0.3 — SpaghettiChef Connection And Black-Box Probing
 
 TODO 0.2.0
 - create Django apps: connections, probes, benchmarks, reports

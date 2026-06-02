@@ -723,3 +723,187 @@ git add .
 git commit -m "0.1.2 - Bootstrap Angular frontend"
 ```
  
+
+ 
+---
+
+## TODO 0.1.3 — Local Monitoring Stack Smoke Test
+
+### Purpose
+
+Start the first local monitoring stack for BenchChef.
+
+This step verifies that Prometheus and Grafana can run locally through Docker Compose.
+
+It does not yet monitor SpaghettiChef.
+
+It does not yet monitor BenchChef Django.
+
+### Work To Do
+
+### 1. Verify Docker is available
+
+```bash
+docker --version
+docker compose version
+```
+
+### 2. Verify Prometheus config exists
+
+Expected file:
+
+```text
+prometheus/prometheus.yml
+```
+
+Expected minimal content:
+
+```yaml
+global:
+  scrape_interval: 15s
+
+scrape_configs:
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+```
+
+### 3. Verify Docker Compose file exists
+
+Expected file:
+
+```text
+docker-compose.yml
+```
+
+Expected services:
+
+```text
+prometheus
+grafana
+```
+
+### 4. Start monitoring stack
+
+From repository root:
+
+```bash
+cd ~/coding/github/bench-chef
+docker compose up -d
+
+sudo systemctl start docker
+```
+
+### 5. Check containers
+
+```bash
+docker compose ps
+```
+
+Expected:
+
+```text
+benchchef-prometheus running
+benchchef-grafana running
+```
+
+### 6. Open Prometheus
+
+Open:
+
+```text
+http://localhost:9090
+```
+
+Check:
+
+```text
+Status -> Targets
+```
+
+Expected:
+
+```text
+prometheus target is UP
+```
+
+### 7. Open Grafana
+
+Open:
+
+```text
+http://localhost:3000
+```
+
+Default login:
+
+```text
+user: admin
+password: admin
+```
+
+Grafana may ask to change the password.
+
+### 8. Stop monitoring stack
+
+```bash
+docker compose down
+```
+
+### 9. Document local startup commands
+
+Add to `README.md`:
+
+````markdown
+## Local monitoring stack
+
+Start Prometheus and Grafana:
+
+```bash
+docker compose up -d
+````
+
+Open:
+
+```text
+Prometheus: http://localhost:9090
+Grafana:    http://localhost:3000
+```
+
+Stop:
+
+```bash
+docker compose down
+```
+
+
+### Acceptance Criteria
+
+```text
+docker compose starts Prometheus
+docker compose starts Grafana
+Prometheus opens on port 9090
+Prometheus target page shows prometheus as UP
+Grafana opens on port 3000
+README documents start/stop commands
+SpaghettiChef is not monitored yet
+BenchChef Django is not monitored yet
+git status is clean after commit
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m "0.1.3 - Bootstrap local monitoring stack"
+```
+
+
+Then run:
+
+```bash
+cd ~/coding/github/bench-chef
+docker compose up -d
+docker compose ps
+```
