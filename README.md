@@ -110,20 +110,12 @@ BenchChef
 
 ## Implementation Status
 
-```text
-0.1.0  Repository skeleton                  DONE
-0.1.1  Django backend bootstrap             DONE
-0.1.2  Angular frontend bootstrap           DONE
-0.1.3  Prometheus / Grafana smoke test      DONE
- ```
-
-## Roadmap:
 
 | Version | Status      | Goal                                                              |
 | ------- | ----------- | ----------------------------------------------------------------- |
-| 0.1.x   | IN PROGRESS | Project foundation (Angular, Django, Prometheus, Grafana, Docker) |
-| 0.2.x   | PLANNED     | Django backend foundation                                         |
-| 0.3.x   | PLANNED     | SpaghettiChef connection layer                                    |
+| 0.1.x   | DONE        | Project foundation (Angular, Django, Prometheus, Grafana, Docker) |
+| 0.2.x   | DONE        | Django backend foundation                                         |
+| 0.3.x   | IN PROGRESS | SpaghettiChef connection layer                                    |
 | 0.4.x   | PLANNED     | Black-box performance probes                                      |
 | 0.5.x   | PLANNED     | Prometheus integration                                            |
 | 0.6.x   | PLANNED     | External system metrics                                           |
@@ -132,7 +124,7 @@ BenchChef
 | 0.9.x   | PLANNED     | Benchmark scenario runner                                         |
 | 1.0.x   | PLANNED     | Reports and portfolio release                                     |
 
-Detailed roadmap: `docs/`
+Detailed status :  [roadmap](/docs/roadmap.md).
 
 
 

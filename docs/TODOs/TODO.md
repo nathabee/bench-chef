@@ -65,7 +65,7 @@ backend-django/
 ---
 
 
-## TODO 0.2 BenchChef Backend Domain Foundation
+## TODO 0.2.x BenchChef Backend Domain Foundation
 
 ### TODO 0.2.0
 - create Django apps: connections, probes, benchmarks, reports
@@ -98,7 +98,7 @@ backend-django/
 - keep `.env` only for optional defaults
 
  
-## TODO 0.3 SpaghettiChef Connection
+## TODO 0.3.x SpaghettiChef Connection
 
 ### TODO 0.3.0
 - add backend service for SpaghettiChef HTTP calls
