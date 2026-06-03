@@ -282,7 +282,7 @@ Grafana shows whether SpaghettiChef is healthy, degraded, slow, down, or recover
 
 ## Purpose
 
-Provide the portfolio-ready BenchChef interface.
+Provide the BenchChef interface.
 
 ## Scope
 

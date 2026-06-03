@@ -885,3 +885,63 @@ git add .
 git commit -m 'Normalize probe timeout and error handling'
 ```
  
+---
+
+## TODO 0.3.8 — Connection Diagnostics Endpoint
+
+### Purpose
+
+Add one endpoint that runs several read-only SpaghettiChef probes together.
+
+This endpoint gives BenchChef a simple connection diagnosis:
+
+```text
+ONLINE
+DEGRADED
+OFFLINE
+````
+
+### Work To Do
+
+* add diagnostics endpoint
+* run health, version, monitoring, and dashboard probes together
+* store one `ProbeSample` per probe
+* return combined status
+* do not add Prometheus export yet
+* do not add Angular integration yet
+
+````
+
+impact :
+
+```text
+backend-django/connections/views.py
+``` 
+
+Test:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/diagnostics/
+```
+
+Check stored samples:
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/
+```
+
+Expected if SpaghettiChef is running:
+
+```text
+diagnostic_status = ONLINE
+```
+
+Suggested commit:
+
+```bash
+git status
+git add .
+git commit -m 'Add connection diagnostics endpoint'
+```

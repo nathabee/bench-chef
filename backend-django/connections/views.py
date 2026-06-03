@@ -33,6 +33,30 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
             error_message=probe_result.error_message,
         )
 
+    def _probe_payload(
+        self,
+        probe_result: ProbeResult,
+        probe_sample: ProbeSample,
+    ) -> dict:
+        return {
+            'id': probe_sample.id,
+            'method': probe_sample.method,
+            'url': probe_sample.url,
+            'status_code': probe_sample.status_code,
+            'latency_ms': probe_sample.latency_ms,
+            'timed_out': probe_sample.timed_out,
+            'success': probe_sample.success,
+            'error_message': probe_sample.error_message,
+            'response_json': probe_result.response_json,
+        }
+
+    def _connection_payload(self, connection: ConnectionProfile) -> dict:
+        return {
+            'id': connection.id,
+            'name': connection.name,
+            'base_url': connection.base_url,
+        }
+
     def _build_probe_response(
         self,
         connection: ConnectionProfile,
@@ -41,25 +65,24 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     ) -> Response:
         return Response(
             {
-                'connection': {
-                    'id': connection.id,
-                    'name': connection.name,
-                    'base_url': connection.base_url,
-                },
-                'probe': {
-                    'id': probe_sample.id,
-                    'method': probe_sample.method,
-                    'url': probe_sample.url,
-                    'status_code': probe_sample.status_code,
-                    'latency_ms': probe_sample.latency_ms,
-                    'timed_out': probe_sample.timed_out,
-                    'success': probe_sample.success,
-                    'error_message': probe_sample.error_message,
-                    'response_json': probe_result.response_json,
-                },
+                'connection': self._connection_payload(connection),
+                'probe': self._probe_payload(
+                    probe_result=probe_result,
+                    probe_sample=probe_sample,
+                ),
             },
             status=status.HTTP_200_OK,
         )
+
+    def _run_and_store_probe(
+        self,
+        probe_function,
+        connection: ConnectionProfile,
+    ) -> tuple[ProbeResult, ProbeSample]:
+        probe_result = probe_function(connection)
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return probe_result, probe_sample
 
     def _missing_field_response(self, field_name: str) -> Response:
         return Response(
@@ -69,6 +92,17 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
             status=status.HTTP_400_BAD_REQUEST,
         )
 
+    def _diagnostic_status(self, probe_results: list[ProbeResult]) -> str:
+        success_count = sum(1 for result in probe_results if result.success)
+
+        if success_count == len(probe_results):
+            return 'ONLINE'
+
+        if success_count == 0:
+            return 'OFFLINE'
+
+        return 'DEGRADED'
+
     @action(
         detail=True,
         methods=['post'],
@@ -76,8 +110,10 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     )
     def test_health(self, request, pk=None):
         connection = self.get_object()
-        probe_result = probe_health(connection)
-        probe_sample = self._store_probe_sample(probe_result)
+        probe_result, probe_sample = self._run_and_store_probe(
+            probe_function=probe_health,
+            connection=connection,
+        )
 
         return self._build_probe_response(
             connection=connection,
@@ -92,8 +128,10 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     )
     def test_version(self, request, pk=None):
         connection = self.get_object()
-        probe_result = probe_version(connection)
-        probe_sample = self._store_probe_sample(probe_result)
+        probe_result, probe_sample = self._run_and_store_probe(
+            probe_function=probe_version,
+            connection=connection,
+        )
 
         return self._build_probe_response(
             connection=connection,
@@ -108,8 +146,10 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     )
     def test_monitoring(self, request, pk=None):
         connection = self.get_object()
-        probe_result = probe_monitoring(connection)
-        probe_sample = self._store_probe_sample(probe_result)
+        probe_result, probe_sample = self._run_and_store_probe(
+            probe_function=probe_monitoring,
+            connection=connection,
+        )
 
         return self._build_probe_response(
             connection=connection,
@@ -124,13 +164,53 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     )
     def test_dashboard_index(self, request, pk=None):
         connection = self.get_object()
-        probe_result = probe_dashboard_index(connection)
-        probe_sample = self._store_probe_sample(probe_result)
+        probe_result, probe_sample = self._run_and_store_probe(
+            probe_function=probe_dashboard_index,
+            connection=connection,
+        )
 
         return self._build_probe_response(
             connection=connection,
             probe_result=probe_result,
             probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='diagnostics',
+    )
+    def diagnostics(self, request, pk=None):
+        connection = self.get_object()
+
+        probe_definitions = (
+            ('health', probe_health),
+            ('version', probe_version),
+            ('monitoring', probe_monitoring),
+            ('dashboard_index', probe_dashboard_index),
+        )
+
+        probe_results = []
+        probe_payloads = {}
+
+        for probe_name, probe_function in probe_definitions:
+            probe_result, probe_sample = self._run_and_store_probe(
+                probe_function=probe_function,
+                connection=connection,
+            )
+            probe_results.append(probe_result)
+            probe_payloads[probe_name] = self._probe_payload(
+                probe_result=probe_result,
+                probe_sample=probe_sample,
+            )
+
+        return Response(
+            {
+                'connection': self._connection_payload(connection),
+                'diagnostic_status': self._diagnostic_status(probe_results),
+                'probes': probe_payloads,
+            },
+            status=status.HTTP_200_OK,
         )
 
     @action(
