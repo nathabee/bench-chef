@@ -1,11 +1,20 @@
-from statistics import mean
-
+from django.http import HttpResponse
 from rest_framework import viewsets
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
+from .metrics import build_metrics_payload
 from .models import ProbeSample
 from .serializers import ProbeSampleSerializer
+
+
+def metrics_view(request):
+    metrics_payload = build_metrics_payload()
+
+    return HttpResponse(
+        metrics_payload,
+        content_type='text/plain; version=0.0.4; charset=utf-8',
+    )
 
 
 def percentile(values: list[int], percentile_value: float) -> int | None:
@@ -30,14 +39,19 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
         success = self.request.query_params.get('success')
 
         if probe_type:
-            queryset = queryset.filter(probe_type=probe_type)
+            queryset = queryset.filter(
+                probe_type=probe_type,
+            )
 
         if url:
-            queryset = queryset.filter(url=url)
+            queryset = queryset.filter(
+                url=url,
+            )
 
         if success is not None:
             if success.lower() == 'true':
                 queryset = queryset.filter(success=True)
+
             elif success.lower() == 'false':
                 queryset = queryset.filter(success=False)
 
@@ -49,9 +63,17 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
         url_path='latency-summary',
     )
     def latency_summary(self, request):
-        queryset = self.get_queryset().exclude(latency_ms__isnull=True)
 
-        values = list(queryset.values_list('latency_ms', flat=True))
+        queryset = self.get_queryset().exclude(
+            latency_ms__isnull=True,
+        )
+
+        values = list(
+            queryset.values_list(
+                'latency_ms',
+                flat=True,
+            )
+        )
 
         if not values:
             return Response(
@@ -71,7 +93,10 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
                 'count': len(values),
                 'min_latency_ms': min(values),
                 'max_latency_ms': max(values),
-                'average_latency_ms': round(mean(values), 2),
+                'average_latency_ms': round(
+                    sum(values) / len(values),
+                    2,
+                ),
                 'p50_latency_ms': percentile(values, 0.50),
                 'p95_latency_ms': percentile(values, 0.95),
                 'p99_latency_ms': percentile(values, 0.99),
@@ -84,13 +109,23 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
         url_path='error-summary',
     )
     def error_summary(self, request):
-        queryset = self.get_queryset().filter(success=False)
+
+        queryset = self.get_queryset().filter(
+            success=False,
+        )
 
         summary = {}
 
         for sample in queryset:
-            key = sample.error_message or f'HTTP_STATUS_{sample.status_code}'
-            summary[key] = summary.get(key, 0) + 1
+
+            key = (
+                sample.error_message
+                or f'HTTP_STATUS_{sample.status_code}'
+            )
+
+            summary[key] = (
+                summary.get(key, 0) + 1
+            )
 
         return Response(
             {
@@ -105,28 +140,50 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
         url_path='slowdown-summary',
     )
     def slowdown_summary(self, request):
-        queryset = self.get_queryset().exclude(latency_ms__isnull=True).order_by('created_at')
+
+        queryset = (
+            self.get_queryset()
+            .exclude(
+                latency_ms__isnull=True,
+            )
+            .order_by(
+                'created_at',
+            )
+        )
+
         samples = list(queryset)
 
         if len(samples) < 2:
+
             return Response(
                 {
                     'sample_count': len(samples),
                     'trend': 'INSUFFICIENT_DATA',
-                    'first_latency_ms': samples[0].latency_ms if samples else None,
-                    'last_latency_ms': samples[-1].latency_ms if samples else None,
+                    'first_latency_ms': (
+                        samples[0].latency_ms
+                        if samples
+                        else None
+                    ),
+                    'last_latency_ms': (
+                        samples[-1].latency_ms
+                        if samples
+                        else None
+                    ),
                     'delta_latency_ms': None,
                 }
             )
 
         first_latency = samples[0].latency_ms
         last_latency = samples[-1].latency_ms
+
         delta = last_latency - first_latency
 
         if delta > 0:
             trend = 'SLOWER'
+
         elif delta < 0:
             trend = 'FASTER'
+
         else:
             trend = 'STABLE'
 
@@ -139,4 +196,3 @@ class ProbeSampleViewSet(viewsets.ModelViewSet):
                 'delta_latency_ms': delta,
             }
         )
- 

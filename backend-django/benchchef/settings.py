@@ -31,8 +31,14 @@ CORS_ALLOWED_ORIGINS = [
 ]
 
 CORS_ALLOW_CREDENTIALS = False
+ 
+ALLOWED_HOSTS = [
+    '0.0.0.0',
+    'localhost',
+    '127.0.0.1',
+    'host.docker.internal',
+]
 
-ALLOWED_HOSTS = ['0.0.0.0', 'localhost',]
 
 
 # Application definition

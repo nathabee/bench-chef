@@ -329,11 +329,12 @@ BenchChef can execute controlled performance tests and persist results.
 
 ---
 
-# 1.0.x — Reports And Portfolio Release
+# 1.0.x — Reports And BenchChef Release
 
 ## Purpose
 
 Make BenchChef demonstrable and documented.
+Integrate into Jenkins to send Release into Github 
 
 ## Scope
 

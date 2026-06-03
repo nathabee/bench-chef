@@ -116,13 +116,13 @@ BenchChef
 | 0.1.x   | DONE        | Project foundation (Angular, Django, Prometheus, Grafana, Docker) |
 | 0.2.x   | DONE        | Django backend foundation                                         |
 | 0.3.x   | DONE        | SpaghettiChef connection layer                                    |
-| 0.4.x   | IN PROGRESS | Black-box performance probes                                      |
-| 0.5.x   | PLANNED     | Prometheus integration                                            |
-| 0.6.x   | PLANNED     | External system metrics                                           |
+| 0.4.x   | DONE        | Black-box performance probes                                      |
+| 0.5.x   | DONE        | Prometheus integration                                            |
+| 0.6.x   | IN PROGRESS | External system metrics                                           |
 | 0.7.x   | PLANNED     | Grafana dashboards                                                |
 | 0.8.x   | PLANNED     | Angular workbench UI                                              |
 | 0.9.x   | PLANNED     | Benchmark scenario runner                                         |
-| 1.0.x   | PLANNED     | Reports and portfolio release                                     |
+| 1.0.x   | PLANNED     | Reports and BenchChef release                                     |
 
 Detailed status :  [roadmap](/docs/roadmap.md).
 
