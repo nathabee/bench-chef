@@ -408,3 +408,155 @@ git status
 git commit -m '0.3.1 - Add SpaghettiChef version connection probe'
 ```
  
+
+
+Yes. Better: **one combined TODO** and **one full replacement** for `services.py` and `views.py`.
+
+## TODO 0.3.2–0.3.6 — Extended SpaghettiChef Read-Only Probes
+
+
+### Scope
+
+This step adds:
+
+```text
+GET /monitoring probe
+GET /dashboard/index.html probe
+GET /printers/{printerId}/camera/jobs/active probe
+GET /admin/printers/{printerId}/camera/jobs/{cameraJobId}/progress probe
+GET /admin/printers/{printerId}/camera/jobs/{cameraJobId}/timeline probe
+```
+
+BenchChef stores each call as a `ProbeSample`.
+
+No Prometheus export yet.
+
+No report generation yet.
+
+No Angular integration yet.
+
+---
+
+### Code impact :
+
+- `backend-django/connections/services.py`
+- `backend-django/connections/views.py`
+ 
+
+---
+
+### Test commands
+
+Use the real connection id from:
+
+```bash
+curl -fsS http://localhost:18090/api/connections/
+```
+
+Example below assumes:
+
+```text
+ConnectionProfile.id = 3
+```
+
+#### Monitoring probe
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-monitoring/
+```
+
+#### Dashboard index probe
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-dashboard-index/
+```
+
+#### Camera active job probe
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-camera-active-job/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "printer_id": "pex01"
+  }'
+```
+
+#### Camera job progress probe
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-camera-job-progress/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "printer_id": "pex01",
+    "camera_job_id": "1"
+  }'
+```
+
+#### Camera job timeline probe
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-camera-job-timeline/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "printer_id": "pex01",
+    "camera_job_id": "1"
+  }'
+```
+
+#### Check stored probe samples
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/
+```
+
+---
+
+### Notes
+
+If a SpaghettiChef endpoint does not exist yet, BenchChef should still store the result.
+
+Example:
+
+```text
+status_code = 404
+success = false
+```
+
+That is not a BenchChef bug. It means the observed SpaghettiChef endpoint is not available.
+
+### Acceptance Criteria
+
+```text
+health probe still works
+version probe still works
+monitoring probe works
+dashboard index probe works
+camera active-job probe accepts printer_id
+camera job progress probe accepts printer_id and camera_job_id
+camera job timeline probe accepts printer_id and camera_job_id
+each probe stores one ProbeSample
+connection refused is handled without crashing
+timeout is handled without crashing
+HTTP 404 is stored as failed ProbeSample, not as backend crash
+no Prometheus export is implemented yet
+no report generation is implemented yet
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m '0.3.2 bis 0.3.6 Add extended SpaghettiChef read-only probes'
+```
+0.3.5 = implemented, expected 404 until SpaghettiChef 0.8.1

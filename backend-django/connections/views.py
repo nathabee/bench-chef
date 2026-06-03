@@ -6,7 +6,16 @@ from probes.models import ProbeSample
 
 from .models import ConnectionProfile
 from .serializers import ConnectionProfileSerializer
-from .services import ProbeResult, probe_health, probe_version
+from .services import (
+    ProbeResult,
+    probe_camera_active_job,
+    probe_camera_job_progress,
+    probe_camera_job_timeline,
+    probe_dashboard_index,
+    probe_health,
+    probe_monitoring,
+    probe_version,
+)
 
 
 class ConnectionProfileViewSet(viewsets.ModelViewSet):
@@ -52,6 +61,14 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
             status=status.HTTP_200_OK,
         )
 
+    def _missing_field_response(self, field_name: str) -> Response:
+        return Response(
+            {
+                'error': f'Missing required field: {field_name}',
+            },
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     @action(
         detail=True,
         methods=['post'],
@@ -76,6 +93,119 @@ class ConnectionProfileViewSet(viewsets.ModelViewSet):
     def test_version(self, request, pk=None):
         connection = self.get_object()
         probe_result = probe_version(connection)
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return self._build_probe_response(
+            connection=connection,
+            probe_result=probe_result,
+            probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='test-monitoring',
+    )
+    def test_monitoring(self, request, pk=None):
+        connection = self.get_object()
+        probe_result = probe_monitoring(connection)
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return self._build_probe_response(
+            connection=connection,
+            probe_result=probe_result,
+            probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='test-dashboard-index',
+    )
+    def test_dashboard_index(self, request, pk=None):
+        connection = self.get_object()
+        probe_result = probe_dashboard_index(connection)
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return self._build_probe_response(
+            connection=connection,
+            probe_result=probe_result,
+            probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='test-camera-active-job',
+    )
+    def test_camera_active_job(self, request, pk=None):
+        printer_id = request.data.get('printer_id')
+        if not printer_id:
+            return self._missing_field_response('printer_id')
+
+        connection = self.get_object()
+        probe_result = probe_camera_active_job(
+            connection=connection,
+            printer_id=printer_id,
+        )
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return self._build_probe_response(
+            connection=connection,
+            probe_result=probe_result,
+            probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='test-camera-job-progress',
+    )
+    def test_camera_job_progress(self, request, pk=None):
+        printer_id = request.data.get('printer_id')
+        camera_job_id = request.data.get('camera_job_id')
+
+        if not printer_id:
+            return self._missing_field_response('printer_id')
+
+        if not camera_job_id:
+            return self._missing_field_response('camera_job_id')
+
+        connection = self.get_object()
+        probe_result = probe_camera_job_progress(
+            connection=connection,
+            printer_id=printer_id,
+            camera_job_id=camera_job_id,
+        )
+        probe_sample = self._store_probe_sample(probe_result)
+
+        return self._build_probe_response(
+            connection=connection,
+            probe_result=probe_result,
+            probe_sample=probe_sample,
+        )
+
+    @action(
+        detail=True,
+        methods=['post'],
+        url_path='test-camera-job-timeline',
+    )
+    def test_camera_job_timeline(self, request, pk=None):
+        printer_id = request.data.get('printer_id')
+        camera_job_id = request.data.get('camera_job_id')
+
+        if not printer_id:
+            return self._missing_field_response('printer_id')
+
+        if not camera_job_id:
+            return self._missing_field_response('camera_job_id')
+
+        connection = self.get_object()
+        probe_result = probe_camera_job_timeline(
+            connection=connection,
+            printer_id=printer_id,
+            camera_job_id=camera_job_id,
+        )
         probe_sample = self._store_probe_sample(probe_result)
 
         return self._build_probe_response(

@@ -112,3 +112,37 @@ def probe_health(connection: ConnectionProfile) -> ProbeResult:
 
 def probe_version(connection: ConnectionProfile) -> ProbeResult:
     return probe_get(connection, connection.version_path)
+
+
+def probe_monitoring(connection: ConnectionProfile) -> ProbeResult:
+    return probe_get(connection, connection.monitoring_path)
+
+
+def probe_dashboard_index(connection: ConnectionProfile) -> ProbeResult:
+    return probe_get(connection, connection.dashboard_index_path)
+
+
+def probe_camera_active_job(
+    connection: ConnectionProfile,
+    printer_id: str,
+) -> ProbeResult:
+    path = f'/printers/{printer_id}/camera/jobs/active'
+    return probe_get(connection, path)
+
+
+def probe_camera_job_progress(
+    connection: ConnectionProfile,
+    printer_id: str,
+    camera_job_id: str,
+) -> ProbeResult:
+    path = f'/admin/printers/{printer_id}/camera/jobs/{camera_job_id}/progress'
+    return probe_get(connection, path)
+
+
+def probe_camera_job_timeline(
+    connection: ConnectionProfile,
+    printer_id: str,
+    camera_job_id: str,
+) -> ProbeResult:
+    path = f'/admin/printers/{printer_id}/camera/jobs/{camera_job_id}/timeline'
+    return probe_get(connection, path)
