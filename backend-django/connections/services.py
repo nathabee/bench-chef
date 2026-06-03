@@ -1,11 +1,34 @@
 import time
 from dataclasses import dataclass
+from enum import StrEnum
 from typing import Any
 from urllib.parse import urljoin
 
 import requests
 
 from .models import ConnectionProfile
+
+
+class ProbeErrorType(StrEnum):
+    NONE = 'NONE'
+    TIMEOUT = 'TIMEOUT'
+    CONNECTION_REFUSED = 'CONNECTION_REFUSED'
+    HTTP_ERROR = 'HTTP_ERROR'
+    INVALID_JSON = 'INVALID_JSON'
+    REQUEST_ERROR = 'REQUEST_ERROR'
+
+
+def format_probe_error(
+    error_type: ProbeErrorType,
+    detail: str = '',
+) -> str:
+    if error_type == ProbeErrorType.NONE:
+        return ''
+
+    if detail:
+        return f'{error_type.value}: {detail}'
+
+    return error_type.value
 
 
 @dataclass
@@ -26,7 +49,30 @@ def build_url(base_url: str, path: str) -> str:
     return urljoin(normalized_base_url, normalized_path)
 
 
-def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
+def parse_response_json(
+    response: requests.Response,
+    expect_json: bool,
+) -> tuple[dict[str, Any] | list[Any] | None, str]:
+    if not expect_json:
+        return None, ''
+
+    try:
+        return response.json(), ''
+    except ValueError:
+        if 200 <= response.status_code < 300:
+            return None, format_probe_error(
+                ProbeErrorType.INVALID_JSON,
+                'Response is not valid JSON',
+            )
+
+        return None, ''
+
+
+def probe_get(
+    connection: ConnectionProfile,
+    path: str,
+    expect_json: bool = True,
+) -> ProbeResult:
     method = 'GET'
     url = build_url(connection.base_url, path)
     timeout_seconds = connection.request_timeout_ms / 1000
@@ -46,11 +92,23 @@ def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
 
         latency_ms = int((time.perf_counter() - started_at) * 1000)
 
-        response_json = None
-        try:
-            response_json = response.json()
-        except ValueError:
-            response_json = None
+        response_json, json_error_message = parse_response_json(
+            response=response,
+            expect_json=expect_json,
+        )
+
+        success = 200 <= response.status_code < 300
+
+        if not success:
+            error_message = format_probe_error(
+                ProbeErrorType.HTTP_ERROR,
+                f'HTTP {response.status_code}',
+            )
+        elif json_error_message:
+            success = False
+            error_message = json_error_message
+        else:
+            error_message = format_probe_error(ProbeErrorType.NONE)
 
         return ProbeResult(
             method=method,
@@ -58,8 +116,8 @@ def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
             status_code=response.status_code,
             latency_ms=latency_ms,
             timed_out=False,
-            success=200 <= response.status_code < 300,
-            error_message='',
+            success=success,
+            error_message=error_message,
             response_json=response_json,
         )
 
@@ -73,7 +131,10 @@ def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
             latency_ms=latency_ms,
             timed_out=True,
             success=False,
-            error_message='Request timed out',
+            error_message=format_probe_error(
+                ProbeErrorType.TIMEOUT,
+                'Request timed out',
+            ),
             response_json=None,
         )
 
@@ -87,7 +148,10 @@ def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
             latency_ms=latency_ms,
             timed_out=False,
             success=False,
-            error_message='Connection refused or target unreachable',
+            error_message=format_probe_error(
+                ProbeErrorType.CONNECTION_REFUSED,
+                'Target unreachable',
+            ),
             response_json=None,
         )
 
@@ -101,7 +165,10 @@ def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
             latency_ms=latency_ms,
             timed_out=False,
             success=False,
-            error_message=str(exc),
+            error_message=format_probe_error(
+                ProbeErrorType.REQUEST_ERROR,
+                str(exc),
+            ),
             response_json=None,
         )
 
@@ -119,7 +186,11 @@ def probe_monitoring(connection: ConnectionProfile) -> ProbeResult:
 
 
 def probe_dashboard_index(connection: ConnectionProfile) -> ProbeResult:
-    return probe_get(connection, connection.dashboard_index_path)
+    return probe_get(
+        connection=connection,
+        path=connection.dashboard_index_path,
+        expect_json=False,
+    )
 
 
 def probe_camera_active_job(

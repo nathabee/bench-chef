@@ -352,10 +352,6 @@ example dashboard screenshots
 example benchmark result
 ```
 
-## Outcome
-
-BenchChef becomes a clean Angular + Django + Prometheus + Grafana portfolio project.
-
 ---
 
 # Non-Goals

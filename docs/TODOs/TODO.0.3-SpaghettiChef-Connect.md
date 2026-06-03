@@ -408,10 +408,7 @@ git status
 git commit -m '0.3.1 - Add SpaghettiChef version connection probe'
 ```
  
-
-
-Yes. Better: **one combined TODO** and **one full replacement** for `services.py` and `views.py`.
-
+ 
 ## TODO 0.3.2–0.3.6 — Extended SpaghettiChef Read-Only Probes
 
 
@@ -560,3 +557,331 @@ git add .
 git commit -m '0.3.2 bis 0.3.6 Add extended SpaghettiChef read-only probes'
 ```
 0.3.5 = implemented, expected 404 until SpaghettiChef 0.8.1
+
+
+---
+
+## TODO 0.3.7 — Timeout And Error Normalization
+
+### Purpose
+
+Make probe failures readable and stable.
+
+Before this step, some failed probes may store long low-level Python or `requests` exception messages.
+
+After this step, BenchChef should store normalized probe errors such as:
+
+```text
+TIMEOUT
+CONNECTION_REFUSED
+HTTP_ERROR
+INVALID_JSON
+REQUEST_ERROR
+```
+
+This makes probe results easier to read in Django admin, API responses, Angular, and later reports.
+
+### Scope
+
+This step updates the probe service layer only.
+
+It does not add new probe endpoints.
+
+It does not add Prometheus export.
+
+It does not add report generation.
+
+### Work To Do
+
+#### 1. Define normalized error categories
+
+Use these categories:
+
+```text
+NONE
+TIMEOUT
+CONNECTION_REFUSED
+HTTP_ERROR
+INVALID_JSON
+REQUEST_ERROR
+```
+
+Meaning:
+
+```text
+NONE
+successful HTTP request with acceptable response
+
+TIMEOUT
+target did not respond before request_timeout_ms
+
+CONNECTION_REFUSED
+host/port unreachable or connection refused
+
+HTTP_ERROR
+target answered but returned non-2xx status code
+
+INVALID_JSON
+target answered with 2xx but response body was expected to be JSON and could not be parsed
+
+REQUEST_ERROR
+other request-layer failure
+```
+
+#### 2. Decide what is stored in `ProbeSample`
+
+Keep the existing `ProbeSample` model for now.
+
+Store the normalized category in:
+
+```text
+error_message
+```
+
+Examples:
+
+```text
+TIMEOUT: Request timed out
+CONNECTION_REFUSED: Target unreachable
+HTTP_ERROR: HTTP 404
+INVALID_JSON: Response is not valid JSON
+REQUEST_ERROR: Unexpected request failure
+```
+
+No model migration is required for this step.
+
+Later, if needed, BenchChef can add a dedicated `error_type` field.
+
+#### 3. Update `connections/services.py`
+
+Replace the probe service implementation so that:
+
+```text
+connection refused does not store the full requests stack-like message
+timeout is clearly marked
+HTTP 404/500 is stored as HTTP_ERROR
+2xx HTML response is still success for dashboard index
+JSON parse failure does not break dashboard index probes
+latency_ms is always measured
+```
+
+Important rule:
+
+```text
+A non-JSON response is not always an error.
+```
+
+For example:
+
+```text
+/dashboard/index.html
+```
+
+returns HTML, so `response_json = null` is normal.
+
+#### 4. Add JSON expectation flag
+
+Update the generic GET probe so it can distinguish:
+
+```text
+JSON endpoint
+HTML/static endpoint
+```
+
+Recommended function signature:
+
+```python
+def probe_get(
+    connection: ConnectionProfile,
+    path: str,
+    expect_json: bool = True,
+) -> ProbeResult:
+```
+
+Use:
+
+```text
+expect_json=True
+```
+
+for:
+
+```text
+/health
+/version
+/monitoring
+camera JSON endpoints
+```
+
+Use:
+
+```text
+expect_json=False
+```
+
+for:
+
+```text
+/dashboard/index.html
+```
+
+#### 5. Update dashboard probe
+
+Update:
+
+```python
+def probe_dashboard_index(connection: ConnectionProfile) -> ProbeResult:
+    return probe_get(
+        connection,
+        connection.dashboard_index_path,
+        expect_json=False,
+    )
+```
+
+This prevents HTML dashboard response from being treated as invalid JSON.
+
+#### 6. Keep failed HTTP responses as stored probe samples
+
+For HTTP 404, 500, etc.:
+
+```text
+status_code = real HTTP status code
+success = false
+timed_out = false
+error_message = HTTP_ERROR: HTTP 404
+```
+
+This is important because a 404 from SpaghettiChef is still a valid observation.
+
+BenchChef should not crash.
+
+#### 7. Test success case
+
+Start SpaghettiChef and BenchChef.
+
+Run:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-health/
+```
+
+Expected:
+
+```text
+status_code = 200
+success = true
+error_message = ''
+response_json is present
+```
+
+#### 8. Test dashboard HTML case
+
+Run:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-dashboard-index/
+```
+
+Expected:
+
+```text
+status_code = 200
+success = true
+error_message = ''
+response_json = null
+```
+
+This is correct because the dashboard returns HTML.
+
+#### 9. Test connection refused case
+
+Stop SpaghettiChef or change the connection profile to an unused port.
+
+Run:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-health/
+```
+
+Expected:
+
+```text
+status_code = null
+success = false
+timed_out = false
+error_message = CONNECTION_REFUSED: Target unreachable
+```
+
+#### 10. Test HTTP error case
+
+Call a future/not-yet-implemented endpoint such as camera progress when SpaghettiChef returns 404:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-camera-job-progress/ \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "printer_id": "lux01",
+    "camera_job_id": "3"
+  }'
+```
+
+Expected until SpaghettiChef implements this endpoint:
+
+```text
+status_code = 404
+success = false
+timed_out = false
+error_message = HTTP_ERROR: HTTP 404
+```
+
+#### 11. Verify stored probe samples
+
+Run:
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/
+```
+
+Check that stored rows have readable error messages.
+
+Also verify in Django admin:
+
+```text
+http://localhost:18090/admin
+```
+
+### Acceptance Criteria
+
+```text
+timeout errors are normalized
+connection refused errors are normalized
+HTTP 4xx/5xx errors are normalized
+dashboard HTML response is accepted
+invalid JSON does not crash the probe
+latency_ms is still stored
+status_code is still stored when available
+ProbeSample rows remain readable in Django admin
+existing health probe still works
+existing version probe still works
+existing monitoring probe still works
+existing dashboard probe still works
+existing camera probes still work
+no database migration is required
+```
+
+### Suggested Commit
+
+```bash
+git status
+git add .
+git commit -m 'Normalize probe timeout and error handling'
+```
+ 
