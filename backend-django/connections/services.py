@@ -26,9 +26,9 @@ def build_url(base_url: str, path: str) -> str:
     return urljoin(normalized_base_url, normalized_path)
 
 
-def probe_health(connection: ConnectionProfile) -> ProbeResult:
+def probe_get(connection: ConnectionProfile, path: str) -> ProbeResult:
     method = 'GET'
-    url = build_url(connection.base_url, connection.health_path)
+    url = build_url(connection.base_url, path)
     timeout_seconds = connection.request_timeout_ms / 1000
 
     headers = {}
@@ -63,6 +63,20 @@ def probe_health(connection: ConnectionProfile) -> ProbeResult:
             response_json=response_json,
         )
 
+    except requests.Timeout:
+        latency_ms = int((time.perf_counter() - started_at) * 1000)
+
+        return ProbeResult(
+            method=method,
+            url=url,
+            status_code=None,
+            latency_ms=latency_ms,
+            timed_out=True,
+            success=False,
+            error_message='Request timed out',
+            response_json=None,
+        )
+
     except requests.ConnectionError:
         latency_ms = int((time.perf_counter() - started_at) * 1000)
 
@@ -90,3 +104,11 @@ def probe_health(connection: ConnectionProfile) -> ProbeResult:
             error_message=str(exc),
             response_json=None,
         )
+
+
+def probe_health(connection: ConnectionProfile) -> ProbeResult:
+    return probe_get(connection, connection.health_path)
+
+
+def probe_version(connection: ConnectionProfile) -> ProbeResult:
+    return probe_get(connection, connection.version_path)

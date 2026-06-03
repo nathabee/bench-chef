@@ -1,3 +1,4 @@
+# TODO 0.3.x - Connection to SpaghettiChef
 ## TODO 0.3.0 — SpaghettiChef Health Connection Probe
 
 ### Purpose
@@ -209,7 +210,7 @@ If SpaghettiChef is not running:
 ```json
 {
   "connection": {
-    "id": 1,
+    "id": {connection-id},
     "name": "Local SpaghettiChef"
   },
   "probe": {
@@ -246,10 +247,164 @@ no Prometheus export is implemented yet
 ```bash
 git status
 git add .
-git commit -m 'Add SpaghettiChef health connection probe'
+git commit -m '0.3.0 Add SpaghettiChef health connection probe'
 ```
 
+---
+ 
+## TODO 0.3.1 — SpaghettiChef Version Probe
+
+### Purpose
+
+Add a second black-box probe against SpaghettiChef.
+
+This step tests one configured SpaghettiChef connection by calling:
+
+```text
+GET /version
 ```
 
-That removes the repetition and keeps `0.3.0` focused.
+BenchChef must measure latency, normalize the result, store it as a `ProbeSample`, and return the parsed version response when available.
+ 
+
+### Work To Do
+
+#### 1. Refactor service to support generic GET probes
+
+Update:
+
+```text
+backend-django/connections/services.py
 ```
+ 
+#### 2. Add reusable ProbeSample creation helper
+
+Update:
+
+```text
+backend-django/connections/views.py
+```
+ 
+
+#### 3. Verify SpaghettiChef version endpoint directly
+
+Make sure SpaghettiChef is running on the configured port.
+
+Example:
+
+```bash
+curl -fsS http://localhost:18080/version
+```
+
+Expected result depends on SpaghettiChef, but should be JSON or text response with version information.
+
+#### 4. Test BenchChef version probe
+
+Start BenchChef backend:
+
+```bash
+python manage.py runserver 0.0.0.0:18090
+```
+
+Call:
+
+```bash
+curl -fsS \
+  -X POST \
+  http://localhost:18090/api/connections/3/test-version/
+```
+
+Use the actual `ConnectionProfile.id` from:
+
+```bash
+curl -fsS http://localhost:18090/api/connections/
+```
+
+#### 5. Check stored probe samples
+
+```bash
+curl -fsS http://localhost:18090/api/probe-samples/
+```
+
+You should see a new row for:
+
+```text
+GET http://localhost:18080/version
+```
+
+### Expected Result
+
+If SpaghettiChef is running:
+
+```json
+{
+  "connection": {
+    "id": 3,
+    "name": "Local SpaghettiChef",
+    "base_url": "http://localhost:18080"
+  },
+  "probe": {
+    "id": 5,
+    "method": "GET",
+    "url": "http://localhost:18080/version",
+    "status_code": 200,
+    "latency_ms": 4,
+    "timed_out": false,
+    "success": true,
+    "error_message": "",
+    "response_json": {
+      "version": "1.0.5"
+    }
+  }
+}
+```
+
+If SpaghettiChef is not running:
+
+```json
+{
+  "connection": {
+    "id": 3,
+    "name": "Local SpaghettiChef",
+    "base_url": "http://localhost:18080"
+  },
+  "probe": {
+    "id": 6,
+    "method": "GET",
+    "url": "http://localhost:18080/version",
+    "status_code": null,
+    "latency_ms": 0,
+    "timed_out": false,
+    "success": false,
+    "error_message": "Connection refused or target unreachable",
+    "response_json": null
+  }
+}
+```
+
+### Acceptance Criteria
+
+```text
+generic probe_get service exists
+probe_health still works after refactor
+probe_version exists
+POST /api/connections/{id}/test-version/ exists
+endpoint calls configured base_url + version_path
+endpoint applies configured request_timeout_ms
+endpoint measures latency
+endpoint handles connection refused without crashing
+endpoint handles timeout without crashing
+endpoint stores one ProbeSample per call
+GET /api/probe-samples/ shows stored version probe result
+health probe still works
+no Prometheus export is implemented yet
+```
+
+### Suggested Commit
+
+```bash
+git add .
+git status
+git commit -m '0.3.1 - Add SpaghettiChef version connection probe'
+```
+ 
