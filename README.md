@@ -115,8 +115,8 @@ BenchChef
 | ------- | ----------- | ----------------------------------------------------------------- |
 | 0.1.x   | DONE        | Project foundation (Angular, Django, Prometheus, Grafana, Docker) |
 | 0.2.x   | DONE        | Django backend foundation                                         |
-| 0.3.x   | IN PROGRESS | SpaghettiChef connection layer                                    |
-| 0.4.x   | PLANNED     | Black-box performance probes                                      |
+| 0.3.x   | DONE        | SpaghettiChef connection layer                                    |
+| 0.4.x   | IN PROGRESS | Black-box performance probes                                      |
 | 0.5.x   | PLANNED     | Prometheus integration                                            |
 | 0.6.x   | PLANNED     | External system metrics                                           |
 | 0.7.x   | PLANNED     | Grafana dashboards                                                |

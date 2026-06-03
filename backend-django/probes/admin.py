@@ -6,6 +6,9 @@ from .models import ProbeSample
 @admin.register(ProbeSample)
 class ProbeSampleAdmin(admin.ModelAdmin):
     list_display = (
+        'probe_type',
+        'connection_profile',
+        'benchmark_run',
         'method',
         'url',
         'status_code',
@@ -16,6 +19,7 @@ class ProbeSampleAdmin(admin.ModelAdmin):
     )
 
     list_filter = (
+        'probe_type',
         'method',
         'status_code',
         'timed_out',

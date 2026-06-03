@@ -8,6 +8,9 @@ class ProbeSampleSerializer(serializers.ModelSerializer):
         model = ProbeSample
         fields = (
             'id',
+            'probe_type',
+            'connection_profile',
+            'benchmark_run',
             'method',
             'url',
             'status_code',
@@ -15,6 +18,7 @@ class ProbeSampleSerializer(serializers.ModelSerializer):
             'timed_out',
             'success',
             'error_message',
+            'response_json',
             'created_at',
         )
         read_only_fields = (

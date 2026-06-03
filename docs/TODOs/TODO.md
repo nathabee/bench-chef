@@ -160,3 +160,188 @@ backend-django/
 - return combined online/offline/degraded status
 - store individual ProbeSample rows
  
+
+# 0.4.x TODO
+
+
+
+## TODO 0.4.0 — Probe Type Classification
+
+### Purpose
+
+Classify stored `ProbeSample` rows by probe type.
+
+### Work To Do
+
+- add probe type field to `ProbeSample`
+- support:
+  - `HEALTH_PROBE`
+  - `VERSION_PROBE`
+  - `MONITORING_PROBE`
+  - `DASHBOARD_ASSET_PROBE`
+  - `CAMERA_JOB_ACTIVE_PROBE`
+  - `CAMERA_JOB_PROGRESS_PROBE`
+  - `CAMERA_JOB_TIMELINE_PROBE`
+- update serializers
+- update Django admin
+- update all probe endpoints to store the correct probe type
+- keep existing HTTP status, latency, timeout, success, error message
+
+---
+
+## TODO 0.4.1 — Repeated Probe Execution
+
+### Purpose
+
+Run one selected probe multiple times.
+
+### Work To Do
+
+- add endpoint to execute a selected probe repeatedly
+- support repeat count
+- support delay between requests
+- store one `ProbeSample` per request
+- return min, max, average latency
+- return success count and failure count
+
+---
+
+## TODO 0.4.2 — Diagnostics History
+
+### Purpose
+
+Run diagnostics repeatedly and store the results.
+
+### Work To Do
+
+- run health, version, monitoring, and dashboard probes together
+- store individual `ProbeSample` rows
+- group run under `BenchmarkRun`
+- calculate:
+  - online count
+  - degraded count
+  - offline count
+  - average latency
+
+---
+
+## TODO 0.4.3 — Dashboard Responsiveness Scenario
+
+### Purpose
+
+Measure dashboard availability and response time.
+
+### Work To Do
+
+- repeatedly call `/dashboard/index.html`
+- store one `ProbeSample` per request
+- calculate success rate
+- calculate average latency
+- calculate p50, p95, p99 latency
+
+---
+
+## TODO 0.4.4 — Camera Active Job Polling Scenario
+
+### Purpose
+
+Observe active camera job state from outside.
+
+### Work To Do
+
+- repeatedly call `/printers/{printerId}/camera/jobs/active`
+- support `printerId`
+- store one `ProbeSample` per request
+- read `jobId`, `state`, `latestSnapshotId`, `latestCaptureAt` from response JSON when available
+- calculate basic snapshot progression when possible
+
+---
+
+## TODO 0.4.5 — Camera Progress And Timeline Probes
+
+### Purpose
+
+Keep BenchChef aligned with planned SpaghettiChef 0.8 observability endpoints.
+
+### Work To Do
+
+- keep probing `/admin/printers/{printerId}/camera/jobs/{cameraJobId}/progress`
+- keep probing `/admin/printers/{printerId}/camera/jobs/{cameraJobId}/timeline`
+- support `printerId`
+- support `cameraJobId`
+- store one `ProbeSample` per request
+- if endpoint returns `404`, store it as normal failed sample:
+  - `status_code = 404`
+  - `success = false`
+  - `error_message = HTTP_ERROR: HTTP 404`
+- do not read SpaghettiChef filesystem
+- do not read SpaghettiChef SQLite
+
+---
+
+## TODO 0.4.6 — Latency Summary API
+
+### Purpose
+
+Summarize stored probe latency.
+
+### Work To Do
+
+- add API endpoint for latency summary
+- filter by:
+  - probe type
+  - URL
+  - success
+  - time range
+- calculate:
+  - count
+  - min
+  - max
+  - average
+  - p50
+  - p95
+  - p99
+
+---
+
+## TODO 0.4.7 — Error Summary API
+
+### Purpose
+
+Summarize stored probe failures.
+
+### Work To Do
+
+- add API endpoint for error summary
+- group by:
+  - probe type
+  - URL
+  - error message
+  - status code
+- count:
+  - timeout
+  - connection refused
+  - HTTP error
+  - invalid JSON
+  - request error
+
+---
+
+## TODO 0.4.8 — Slowdown Detection Preparation
+
+### Purpose
+
+Prepare basic trend calculation from black-box probe samples.
+
+### Work To Do
+
+- calculate latency trend over time
+- calculate snapshot progression trend when active-job JSON contains `latestSnapshotId`
+- detect increasing latency
+- detect stalled snapshot progress
+- do not require `/progress`
+- do not require `/timeline`
+- do not use white-box access
+```
+
+ 
