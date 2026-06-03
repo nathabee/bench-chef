@@ -1,7 +1,7 @@
 # 0.5.x TODO — Prometheus Integration
 
 
-## TODO 0.5.0 — BenchChef Metrics Endpoint
+## TODO(DONE) 0.5.0 — BenchChef Metrics Endpoint
 
 ### Purpose
 
@@ -27,7 +27,7 @@ backend-django/probes/urls.py
 
 ---
 
-## TODO 0.5.1 — Probe Metrics
+## TODO(DONE) 0.5.1 — Probe Metrics
 
 ### Purpose
 
@@ -67,7 +67,7 @@ HTTP status count appears
 
 ---
 
-## TODO 0.5.2 — SpaghettiChef Availability Metric
+## TODO(DONE) 0.5.2 — SpaghettiChef Availability Metric
 
 ### Purpose
 
@@ -105,7 +105,7 @@ metric is visible in Prometheus
 
 ---
 
-## TODO 0.5.3 — Camera Observation Metrics
+## TODO(DONE) 0.5.3 — Camera Observation Metrics
 
 ### Purpose
 
@@ -147,7 +147,7 @@ missing camera data does not crash /metrics
 
 ---
 
-## TODO 0.5.4 — Benchmark Run Metrics
+## TODO(DONE) 0.5.4 — Benchmark Run Metrics
 
 ### Purpose
 
@@ -179,7 +179,7 @@ metrics work even if no benchmark runs exist
 
 ---
 
-## TODO 0.5.5 — Prometheus Scrape Configuration
+## TODO(DONE) 0.5.5 — Prometheus Scrape Configuration
 
 ### Purpose
 
@@ -218,7 +218,7 @@ Prometheus can query benchchef_probe_requests_total
 
 ---
 
-## TODO 0.5.6 — Metrics Smoke Test
+## TODO(DONE) 0.5.6 — Metrics Smoke Test
 
 ### Purpose
 

@@ -2,7 +2,7 @@
 
 
 
-## TODO 0.1.0 — BenchChef Repository Skeleton
+## TODO(DONE) 0.1.0 — BenchChef Repository Skeleton
 
 ### Purpose
 
@@ -191,7 +191,7 @@ git status is clean after commit
  
 
  
-## TODO 0.1.1 — Django Backend Bootstrap
+## TODO(DONE) 0.1.1 — Django Backend Bootstrap
 
 ### Purpose
 
@@ -442,7 +442,7 @@ python manage.py startapp benchmarks
 python manage.py startapp reports
 ```
  
-## TODO 0.1.2 — Angular Frontend Bootstrap
+## TODO(DONE) 0.1.2 — Angular Frontend Bootstrap
 
 ### Purpose
 
@@ -727,7 +727,7 @@ git commit -m "0.1.2 - Bootstrap Angular frontend"
  
 ---
 
-## TODO 0.1.3 — Local Monitoring Stack Smoke Test
+## TODO(DONE) 0.1.3 — Local Monitoring Stack Smoke Test
 
 ### Purpose
 

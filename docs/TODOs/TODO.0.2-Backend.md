@@ -1,6 +1,6 @@
 # 0.2.x TODO  BenchChef Backend Domain Foundation
 
-## TODO 0.2.0 — Connection Profile Foundation
+## TODO(DONE) 0.2.0 — Connection Profile Foundation
 
 ### Purpose
 
@@ -350,7 +350,7 @@ git commit -m '0.2.0 - Add connection profile foundation'
 
 
  
-## TODO 0.2.1 — Probe Sample Foundation
+## TODO(DONE) 0.2.1 — Probe Sample Foundation
 
 ### Purpose
 
@@ -513,7 +513,7 @@ git commit -m '0.2.1 - Add probe sample foundation'
 ```
  
 ---
-## TODO 0.2.2 — Benchmark Run Foundation
+## TODO(DONE) 0.2.2 — Benchmark Run Foundation
 
 ### Purpose
 
@@ -678,7 +678,7 @@ git commit -m '0.2.3 - Add benchmark run foundation'
 
 ---
 
-## TODO 0.2.3 — Report Record Foundation
+## TODO(DONE) 0.2.3 — Report Record Foundation
 
 ### Purpose
 
@@ -878,7 +878,7 @@ git commit -m '0.2.3 - Add report record foundation'
 ```
  
 ---
-## TODO 0.2.4 — Connection Probe Configuration
+## TODO(DONE) 0.2.4 — Connection Probe Configuration
 
 ### Purpose
 

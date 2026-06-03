@@ -221,8 +221,53 @@ benchchef_benchmark_run_duration_seconds
 Prometheus stores BenchChef measurements.
 
 ---
+# 0.6.x — Grafana First Dashboard
 
-# 0.6.x — External System Metrics
+## Purpose
+
+Create the first useful Grafana dashboard from the metrics already exposed by BenchChef.
+
+This is an early visualization step.
+
+It uses only existing BenchChef / Prometheus data.
+
+## Scope
+
+```text
+Grafana Prometheus datasource
+first BenchChef dashboard
+probe request count panel
+probe failure count panel
+probe latency panel
+SpaghettiChef up/down panel
+HTTP status panel
+dashboard asset latency panel
+```
+
+## Metrics Used
+
+```text
+benchchef_probe_requests_total
+benchchef_probe_failures_total
+benchchef_probe_duration_seconds
+benchchef_probe_http_status_total
+benchchef_probe_timeout_total
+benchchef_spaghettichef_up
+```
+
+## Outcome
+
+Grafana can already show whether BenchChef sees SpaghettiChef as reachable, responsive, slow, or failing.
+
+This version does not yet include CPU, RAM, disk, or process metrics.
+
+---
+
+
+
+
+
+# 0.7.x — External System Metrics
 
 ## Purpose
 
@@ -254,11 +299,15 @@ BenchChef/Grafana can correlate SpaghettiChef performance with machine/process r
 
 ---
 
-# 0.7.x — Grafana Dashboards
+# 0.8.x — Grafana Observability Dashboards
 
 ## Purpose
 
-Visualize BenchChef and exporter metrics.
+Build the complete Grafana observability layer after external system metrics are available.
+
+This is the second Grafana step.
+
+It combines BenchChef probe metrics with machine and process metrics.
 
 ## Scope
 
@@ -266,25 +315,40 @@ Visualize BenchChef and exporter metrics.
 SpaghettiChef availability dashboard
 API latency dashboard
 dashboard asset latency dashboard
-camera job throughput dashboard
-error/timeout dashboard
-CPU/RAM/disk dashboard
+camera job observation dashboard
+error and timeout dashboard
+CPU dashboard
+RAM dashboard
+disk dashboard
+process resource dashboard
 benchmark run dashboard
+```
+
+## Metrics Used
+
+```text
+BenchChef Prometheus metrics
+node_exporter metrics
+process-exporter metrics
+optional cAdvisor metrics
+optional blackbox_exporter metrics
 ```
 
 ## Outcome
 
-Grafana shows whether SpaghettiChef is healthy, degraded, slow, down, or recovering.
+Grafana shows whether SpaghettiChef is healthy, degraded, slow, down, resource-limited, or recovering.
+
+This version becomes the main technical observability view for the portfolio demonstration.
 
 ---
 
-# 0.8.x — Angular Workbench UI
+# 0.9.x — Angular Workbench UI
 
-## Purpose
+### Purpose
 
 Provide the BenchChef interface.
 
-## Scope
+### Scope
 
 ```text
 connection management
@@ -298,13 +362,13 @@ report browser
 settings
 ```
 
-## Outcome
+### Outcome
 
 Angular becomes the main UI for controlling BenchChef.
 
 ---
 
-# 0.9.x — Benchmark Scenario Runner
+# 0.10.x — Benchmark Scenario Runner
 
 ## Purpose
 

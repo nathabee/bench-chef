@@ -342,6 +342,74 @@ Prepare basic trend calculation from black-box probe samples.
 - do not require `/progress`
 - do not require `/timeline`
 - do not use white-box access
+
+---
+
+# 0.5.x — Prometheus Integration
+
+## Purpose
+
+Expose BenchChef-measured metrics to Prometheus.
+
+## Scope
+
+```text
+BenchChef /metrics endpoint
+Prometheus scrape config
+benchmark run metrics
+HTTP probe metrics
+camera throughput metrics
+error metrics
+timeout metrics
+```
+  
+---
+
+# 0.6.x — Grafana First Dashboard
+
+## Purpose
+
+Create the first useful Grafana dashboard from the metrics already exposed by BenchChef.
+
+This is an early visualization step.
+
+It uses only existing BenchChef / Prometheus data.
+
+## Scope
+
+```text
+Grafana Prometheus datasource
+first BenchChef dashboard
+probe request count panel
+probe failure count panel
+probe latency panel
+SpaghettiChef up/down panel
+HTTP status panel
+dashboard asset latency panel
 ```
 
- 
+
+# 0.8.x — Grafana Observability Dashboards
+
+## Purpose
+
+Build the complete Grafana observability layer after external system metrics are available.
+
+This is the second Grafana step.
+
+It combines BenchChef probe metrics with machine and process metrics.
+
+## Scope
+
+```text
+SpaghettiChef availability dashboard
+API latency dashboard
+dashboard asset latency dashboard
+camera job observation dashboard
+error and timeout dashboard
+CPU dashboard
+RAM dashboard
+disk dashboard
+process resource dashboard
+benchmark run dashboard
+```

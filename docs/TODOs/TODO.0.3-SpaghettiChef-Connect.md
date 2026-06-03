@@ -1,5 +1,5 @@
 # TODO 0.3.x - Connection to SpaghettiChef
-## TODO 0.3.0 — SpaghettiChef Health Connection Probe
+## TODO(DONE) 0.3.0 — SpaghettiChef Health Connection Probe
 
 ### Purpose
 
@@ -252,7 +252,7 @@ git commit -m '0.3.0 Add SpaghettiChef health connection probe'
 
 ---
  
-## TODO 0.3.1 — SpaghettiChef Version Probe
+## TODO(DONE) 0.3.1 — SpaghettiChef Version Probe
 
 ### Purpose
 
@@ -409,7 +409,7 @@ git commit -m '0.3.1 - Add SpaghettiChef version connection probe'
 ```
  
  
-## TODO 0.3.2–0.3.6 — Extended SpaghettiChef Read-Only Probes
+## TODO(DONE) 0.3.2–0.3.6 — Extended SpaghettiChef Read-Only Probes
 
 
 ### Scope
@@ -561,7 +561,7 @@ git commit -m '0.3.2 bis 0.3.6 Add extended SpaghettiChef read-only probes'
 
 ---
 
-## TODO 0.3.7 — Timeout And Error Normalization
+## TODO(DONE) 0.3.7 — Timeout And Error Normalization
 
 ### Purpose
 
@@ -887,7 +887,7 @@ git commit -m 'Normalize probe timeout and error handling'
  
 ---
 
-## TODO 0.3.8 — Connection Diagnostics Endpoint
+## TODO(DONE) 0.3.8 — Connection Diagnostics Endpoint
 
 ### Purpose
 
