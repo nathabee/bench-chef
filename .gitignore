@@ -27,3 +27,11 @@ reports/*
 # Local runtime data
 tmp/
 logs/
+
+
+# conf files
+prometheus.yml
+.env
+## Local process logs
+*.log
+nohup.out

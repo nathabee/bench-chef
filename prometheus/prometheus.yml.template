@@ -4,8 +4,8 @@ global:
 scrape_configs:
   - job_name: "benchchef-backend"
     static_configs:
-      - targets: ["host.docker.internal:18071"]
+      - targets: ["host.docker.internal:${BENCHCHEF_BACKEND_PORT}"]
 
   - job_name: "spaghettichef"
     static_configs:
-      - targets: ["host.docker.internal:18080"]
+      - targets: ["host.docker.internal:${PORTSPAGHETTICHEF}"]

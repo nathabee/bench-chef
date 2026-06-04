@@ -149,7 +149,7 @@ no "No data source" error
 
 ---
 
-## TODO 0.6.3 — Generate Fresh Probe Data For Dashboard
+## TODO(DONE) 0.6.3 — Generate Fresh Probe Data For Dashboard
 
 ### Purpose
 
@@ -163,6 +163,7 @@ Create enough live data so Grafana panels show useful values.
 * optionally run camera active-job polling
 * verify Prometheus receives updated data
 * verify Grafana panels update
+* start/stop scripts to start grafana,prometheus,spaghettichef, benchchef django and angular
 
 ### Commands
 

@@ -94,19 +94,7 @@ EOF
 
 #### 4. Add `.env.example`
 
-```bash
-cat > .env.example <<'EOF'
-BENCHCHEF_DEBUG=true
-BENCHCHEF_BACKEND_PORT=18090
-BENCHCHEF_FRONTEND_PORT=4200
-
-SPAGHETTICHEF_BASE_URL=http://localhost:18080
-SPAGHETTICHEF_ROLE_HEADER=ADMIN
-
-PROMETHEUS_PORT=9090
-GRAFANA_PORT=3000
-EOF
-```
+ 
 
 #### 5. Add initial `docker-compose.yml`
 
