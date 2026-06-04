@@ -11,23 +11,6 @@ BenchChef is a performance supervision and benchmark workbench for SpaghettiChef
 
 BenchChef observes, measures, and analyzes a running SpaghettiChef instance from the outside, while keeping SpaghettiChef lightweight and focused on printer, camera, dashboard, and engine execution.
 
-## Related Project
-
-BenchChef is designed to work with **SpaghettiChef**.
-
-Related repository:
-
-[SpaghettiChef on GitHub](https://github.com/nathabee/spaghetti-chef)
-
-SpaghettiChef is the operational runtime responsible for:
-
-* printer runtime
-* camera runtime
-* dashboard and REST API
-* engine execution
-* image capture and processing
-
-BenchChef is the complementary supervision and benchmark layer.
 
 ## Purpose
 
@@ -48,7 +31,27 @@ BenchChef intentionally does **not** replace SpaghettiChef.
 ```text
 SpaghettiChef performs the work.
 BenchChef observes the work.
-````
+```
+
+## Related Project
+
+BenchChef is designed to work with **SpaghettiChef**.
+
+Related repository:
+
+[SpaghettiChef on GitHub](https://github.com/nathabee/spaghetti-chef)
+
+SpaghettiChef is the operational runtime responsible for:
+
+* printer runtime
+* camera runtime
+* dashboard and REST API
+* engine execution
+* image capture and processing
+
+BenchChef is the complementary supervision and benchmark layer.
+
+
 
 ## Technology Stack
 
@@ -190,6 +193,18 @@ BenchChef First Dashboard
 ```
 
 The dashboard uses BenchChef metrics exported by Django and scraped by Prometheus.
+
+ 
+
+## Documentation
+
+* [Installation and Operation](docs/install.md)
+* [Smoke Tests](docs/test.md)
+* [Metrics Overview](docs/metrics.md)
+* [Grafana Integration](docs/grafana.md)
+* [Roadmap](docs/roadmap.md)
+
+
 
 ## License
 
