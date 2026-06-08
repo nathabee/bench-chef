@@ -1,2 +1,54 @@
-<h1>Settings</h1>
-<p>Local BenchChef service links and frontend settings will be implemented in the settings slice.</p>
+<header class="page-header">
+  <div>
+    <h1>Settings</h1>
+    <p>Local BenchChef service links and boundary reminders.</p>
+  </div>
+</header>
+
+<section class="settings-grid">
+  <article class="settings-card">
+    <h2>BenchChef Local</h2>
+    <dl>
+      <div>
+        <dt>Frontend</dt>
+        <dd><a [href]="frontendUrl" target="_blank" rel="noreferrer">{{ frontendUrl }}</a></dd>
+      </div>
+      <div>
+        <dt>Backend API</dt>
+        <dd><a [href]="backendApi.baseUrl" target="_blank" rel="noreferrer">{{ backendApi.baseUrl }}</a></dd>
+      </div>
+      <div>
+        <dt>Metrics</dt>
+        <dd><a [href]="backendApi.apiUrl('/metrics')" target="_blank" rel="noreferrer">{{ backendApi.apiUrl('/metrics') }}</a></dd>
+      </div>
+    </dl>
+  </article>
+
+  <article class="settings-card">
+    <h2>Observability</h2>
+    <dl>
+      <div>
+        <dt>Prometheus</dt>
+        <dd><a [href]="backendApi.prometheusUrl()" target="_blank" rel="noreferrer">{{ backendApi.prometheusUrl() }}</a></dd>
+      </div>
+      <div>
+        <dt>Grafana</dt>
+        <dd><a [href]="backendApi.grafanaUrl()" target="_blank" rel="noreferrer">{{ backendApi.grafanaUrl() }}</a></dd>
+      </div>
+    </dl>
+  </article>
+
+  <article class="settings-card">
+    <h2>Observed System</h2>
+    <dl>
+      <div>
+        <dt>SpaghettiChef Local</dt>
+        <dd><a [href]="spaghettiChefUrl" target="_blank" rel="noreferrer">{{ spaghettiChefUrl }}</a></dd>
+      </div>
+      <div>
+        <dt>Boundary</dt>
+        <dd>BenchChef observes and benchmarks. Printer and camera control stays in SpaghettiChef.</dd>
+      </div>
+    </dl>
+  </article>
+</section>

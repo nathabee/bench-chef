@@ -1,2 +1,65 @@
-<h1>Reports</h1>
-<p>Generated benchmark report browsing will be implemented after benchmark runs are visible.</p>
+<header class="page-header">
+  <div>
+    <h1>Reports</h1>
+    <p>Generated report records and export readiness.</p>
+  </div>
+
+  <button type="button" (click)="refresh()">Refresh</button>
+</header>
+
+@if (errorMessage) {
+  <div class="notice error">{{ errorMessage }}</div>
+}
+
+<section class="summary-grid">
+  <article>
+    <span>Total</span>
+    <strong>{{ reports.length }}</strong>
+  </article>
+  <article>
+    <span>Ready</span>
+    <strong>{{ statusCount('READY') }}</strong>
+  </article>
+  <article>
+    <span>Generating</span>
+    <strong>{{ statusCount('GENERATING') }}</strong>
+  </article>
+  <article>
+    <span>Benchmark</span>
+    <strong>{{ typeCount('BENCHMARK') }}</strong>
+  </article>
+</section>
+
+<section class="report-table">
+  <div class="table-header">
+    <span>Title</span>
+    <span>Type</span>
+    <span>Status</span>
+    <span>Format</span>
+    <span>File</span>
+    <span>Updated</span>
+  </div>
+
+  @for (report of reports; track report.id) {
+    <article class="table-row">
+      <span>
+        <strong>{{ report.title }}</strong>
+        @if (report.message) {
+          <small>{{ report.message }}</small>
+        }
+      </span>
+      <span>{{ report.report_type }}</span>
+      <span>
+        <mark [class]="report.status.toLowerCase()">{{ report.status }}</mark>
+      </span>
+      <span>{{ report.output_format }}</span>
+      <span>{{ report.file_path || 'not generated yet' }}</span>
+      <span>{{ report.updated_at | date:'short' }}</span>
+    </article>
+  } @empty {
+    <article class="empty-state">
+      <h2>No reports</h2>
+      <p>Report records created by later report generators will appear here.</p>
+    </article>
+  }
+</section>

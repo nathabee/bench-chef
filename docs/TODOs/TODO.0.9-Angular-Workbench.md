@@ -61,17 +61,17 @@ TODO link runs to probe samples where available
 ### 0.9.6 — Reports
 
 ```text
-list report records
-show report type/status
-prepare links for downloadable reports when backend supports them
+DONE list report records
+DONE show report type/status
+TODO prepare links for downloadable reports when backend supports them
 ```
 
 ### 0.9.7 — Settings
 
 ```text
-show local service URLs
-show Grafana, Prometheus, backend, and frontend links
-keep operational printer/camera settings out of BenchChef
+DONE show local service URLs
+DONE show Grafana, Prometheus, backend, and frontend links
+DONE keep operational printer/camera settings out of BenchChef
 ```
 
 ## Original Scope
