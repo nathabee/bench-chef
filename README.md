@@ -115,6 +115,18 @@ Detailed roadmap: [docs/roadmap.md](docs/roadmap.md).
 
 BenchChef can be started with helper scripts.
 Create a ".env" file (use .env.example), modify ports if necessary :
+By default, BenchChef expects SpaghettiChef as a sibling checkout:
+
+```text
+github/
+├── bench-chef/
+└── spaghetti-chef/
+```
+
+`SPAGHETTICHEF_DIR` in `.env` points to that local SpaghettiChef checkout.
+SpaghettiChef is not run by BenchChef Docker Compose; the start script runs it
+with Maven from the sibling project.
+
 Start the local stack:
 
 ```bash
@@ -129,6 +141,8 @@ BenchChef Django backend
 BenchChef Angular frontend
 Prometheus
 Grafana
+node_exporter
+process-exporter
 diagnostics loop
 ```
 
@@ -136,9 +150,11 @@ Open:
 
 ```text
 BenchChef Angular  http://localhost:18072
-BenchChef Backend  http://localhost:18090
-Prometheus         http://localhost:9090
-Grafana            http://localhost:3000
+BenchChef Backend  http://localhost:18071
+Prometheus         http://localhost:18073
+Grafana            http://localhost:18074
+node_exporter      http://localhost:18075/metrics
+process-exporter   http://localhost:18076/metrics
 ```
 
 Default Grafana login:
@@ -175,6 +191,8 @@ benchchef_probe_duration_seconds
 benchchef_probe_http_status_total
 benchchef_probe_timeout_total
 benchchef_spaghettichef_up
+node_memory_MemAvailable_bytes
+rate(namedprocess_namegroup_cpu_seconds_total[5m])
 ```
 
 ## Grafana
@@ -204,9 +222,10 @@ probes as described in [docs/grafana.md](docs/grafana.md).
 
 * [Installation and Operation](docs/install.md)
 * [Smoke Tests](docs/test.md)
-* [API Contract](docs/API.md)
+* [SpaghettiChef Compatibility](docs/spaghettichef-compatibility.md)
 * [Metrics Overview](docs/metrics.md)
 * [Grafana Integration](docs/grafana.md)
+* [External System Metrics](docs/system-metrics.md)
 * [Roadmap](docs/roadmap.md)
 * [Version TODOs](docs/TODOs/README.md)
 

@@ -1,0 +1,12 @@
+process_names:
+  - name: "spaghettichef"
+    cmdline:
+      - ".*spaghettichef\\.Main.*"
+
+  - name: "benchchef-django"
+    cmdline:
+      - ".*manage\\.py.*runserver.*"
+
+  - name: "benchchef-angular"
+    cmdline:
+      - ".*ng.*serve.*"

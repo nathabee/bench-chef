@@ -79,7 +79,7 @@ def probe_get(
 
     headers = {}
     if connection.role_header:
-        headers['X-User-Role'] = connection.role_header
+        headers['X-SpaghettiChef-Role'] = connection.role_header
 
     started_at = time.perf_counter()
 

@@ -1,6 +1,6 @@
 # TODO 0.3.x - Connection to SpaghettiChef
 
-HTTP interface contract: [../API.md](../API.md).
+SpaghettiChef compatibility contract: [../spaghettichef-compatibility.md](../spaghettichef-compatibility.md).
 
 ## TODO(DONE) 0.3.0 — SpaghettiChef Health Connection Probe
 

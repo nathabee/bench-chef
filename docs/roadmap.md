@@ -10,7 +10,8 @@ BenchChef measures the work.
 
 This roadmap describes the next architecture direction. Detailed
 implementation tasks live in the per-version TODO files under [TODOs](TODOs/).
-The current HTTP contract is documented in [API.md](API.md).
+The current SpaghettiChef expectations are documented in
+[spaghettichef-compatibility.md](spaghettichef-compatibility.md).
 
 ## Current Baseline
 
@@ -179,7 +180,8 @@ central dashboard data model
 failure and retry behavior for offline LANs
 ```
 
-Keep SpaghettiChef-facing probe APIs documented separately in [API.md](API.md).
+Keep SpaghettiChef-facing expectations documented separately in
+[spaghettichef-compatibility.md](spaghettichef-compatibility.md).
 Only promote new central sync endpoints to the API contract when implementation
 starts.
 

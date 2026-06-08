@@ -9,6 +9,9 @@ services:
       - benchchef-prometheus-data:/prometheus
     extra_hosts:
       - "host.docker.internal:host-gateway"
+    depends_on:
+      - node-exporter
+      - process-exporter
 
   grafana:
     image: grafana/grafana-oss:latest
@@ -24,6 +27,32 @@ services:
       - benchchef-grafana-data:/var/lib/grafana
     depends_on:
       - prometheus
+
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: benchchef-node-exporter
+    command:
+      - "--path.rootfs=/host"
+      - "--collector.filesystem.mount-points-exclude=^/(sys|proc|dev|host|etc)($$|/)"
+    ports:
+      - "${NODE_EXPORTER_PORT}:9100"
+    pid: host
+    restart: unless-stopped
+    volumes:
+      - "/:/host:ro,rslave"
+
+  process-exporter:
+    image: ncabatoff/process-exporter:latest
+    container_name: benchchef-process-exporter
+    command:
+      - "--procfs=/host/proc"
+      - "--config.path=/config/process-exporter.yml"
+    ports:
+      - "${PROCESS_EXPORTER_PORT}:9256"
+    restart: unless-stopped
+    volumes:
+      - "/proc:/host/proc:ro"
+      - "./prometheus/process-exporter.yml:/config/process-exporter.yml:ro"
 
 volumes:
   benchchef-prometheus-data:

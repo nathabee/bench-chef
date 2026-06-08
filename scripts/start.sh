@@ -11,7 +11,7 @@ set +a
 
 envsubst < prometheus/prometheus.yml.template > prometheus/prometheus.yml
 
-cd ~/coding/github/spaghetti-chef/develop
+cd "$SPAGHETTICHEF_DIR"
 nohup mvn \
   -Dexec.mainClass="spaghettichef.Main" \
   -Dspaghettichef.databaseFile=spaghettichef-local.db \
@@ -24,19 +24,20 @@ cd ~/coding/github/bench-chef
 docker compose up -d
 
 cd ~/coding/github/bench-chef/backend-django
+source .venv/bin/activate
 nohup python manage.py runserver \
   0.0.0.0:"$BENCHCHEF_BACKEND_PORT" \
   > backend.log 2>&1 &
 
 echo $! > /tmp/benchchef-backend.pid
 
-#cd ~/coding/github/bench-chef/frontend-angular
-#nohup ng serve \
-#  --host 0.0.0.0 \
-#  --port "$BENCHCHEF_FRONTEND_PORT" \
-#  > frontend.log 2>&1 &
+cd ~/coding/github/bench-chef/frontend-angular
+nohup ng serve \
+  --host 0.0.0.0 \
+  --port "$BENCHCHEF_FRONTEND_PORT" \
+  > frontend.log 2>&1 &
 
-#echo $! > /tmp/benchchef-frontend.pid
+echo $! > /tmp/benchchef-frontend.pid
 
 echo "Waiting for BenchChef backend on port $BENCHCHEF_BACKEND_PORT..."
 

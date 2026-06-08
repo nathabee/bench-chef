@@ -35,3 +35,8 @@ prometheus.yml
 ## Local process logs
 *.log
 nohup.out
+
+
+# Related docs that are not owned by this project
+docs/RELATED/*
+!docs/RELATED/README.md

@@ -40,8 +40,23 @@ BENCHCHEF_BACKEND_PORT
 BENCHCHEF_FRONTEND_PORT
 PROMETHEUS_PORT
 GRAFANA_PORT
+NODE_EXPORTER_PORT
+PROCESS_EXPORTER_PORT
 PORTSPAGHETTICHEF
+SPAGHETTICHEF_DIR
 ```
+
+`SPAGHETTICHEF_DIR` points to a local SpaghettiChef checkout. BenchChef and
+SpaghettiChef are expected to live next to each other by default:
+
+```text
+github/
+├── bench-chef/
+└── spaghetti-chef/
+```
+
+SpaghettiChef is not started through BenchChef Docker Compose. The start script
+runs it from the sibling checkout with Maven.
 
 ## Start
 
@@ -57,6 +72,8 @@ BenchChef Django Backend
 BenchChef Angular Frontend
 Prometheus
 Grafana
+node_exporter
+process-exporter
 Diagnostics Loop
 ```
 
@@ -83,10 +100,12 @@ Show running processes:
 ## URLs
 
 ```text
-Angular      http://localhost:18072
-Backend      http://localhost:18090
-Prometheus   http://localhost:9090
-Grafana      http://localhost:3000
+Angular           http://localhost:18072
+Backend           http://localhost:18071
+Prometheus        http://localhost:18073
+Grafana           http://localhost:18074
+node_exporter     http://localhost:18075/metrics
+process-exporter  http://localhost:18076/metrics
 ```
 
 ## Grafana Login

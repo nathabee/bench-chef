@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 
+set -a
+source .env
+set +a
+
 echo
 echo "=== SpaghettiChef ==="
 ps -ef | grep -v grep | grep "spaghettichef.Main" || echo "Not running"
@@ -14,7 +18,7 @@ ps -ef | grep -v grep | grep "ng serve" || echo "Not running"
 
 echo
 echo "=== Listening Ports ==="
-ss -ltnp | grep -E ":18080|:18090|:4200|:9090|:3000|:3001" || echo "No matching ports"
+ss -ltnp | grep -E ":${PORTSPAGHETTICHEF}|:${BENCHCHEF_BACKEND_PORT}|:${BENCHCHEF_FRONTEND_PORT}|:${PROMETHEUS_PORT}|:${GRAFANA_PORT}|:${NODE_EXPORTER_PORT}|:${PROCESS_EXPORTER_PORT}" || echo "No matching ports"
 
 echo
 echo "=== Docker Containers ==="

@@ -114,8 +114,8 @@ Start the local BenchChef stack:
 Open:
 
 ```text
-Prometheus   http://localhost:9090
-Grafana      http://localhost:3000
+Prometheus   http://localhost:18073
+Grafana      http://localhost:18074
 ```
 
 Default Grafana login:
@@ -149,19 +149,19 @@ The dashboard needs recent BenchChef probe samples. Use your real connection id
 from:
 
 ```bash
-curl -fsS http://localhost:18090/api/connections/
+curl -fsS http://localhost:18071/api/connections/
 ```
 
 Run one health probe:
 
 ```bash
-curl -fsS -X POST http://localhost:18090/api/connections/{connection-id}/test-health/
+curl -fsS -X POST http://localhost:18071/api/connections/{connection-id}/test-health/
 ```
 
 Run diagnostics:
 
 ```bash
-curl -fsS -X POST http://localhost:18090/api/connections/{connection-id}/diagnostics/
+curl -fsS -X POST http://localhost:18071/api/connections/{connection-id}/diagnostics/
 ```
 
 Generate dashboard responsiveness data:
@@ -169,7 +169,7 @@ Generate dashboard responsiveness data:
 ```bash
 curl -fsS \
   -X POST \
-  http://localhost:18090/api/connections/{connection-id}/dashboard-responsiveness/ \
+  http://localhost:18071/api/connections/{connection-id}/dashboard-responsiveness/ \
   -H 'Content-Type: application/json' \
   -d '{
     "repeat_count": 10,
@@ -182,7 +182,7 @@ Optional camera polling:
 ```bash
 curl -fsS \
   -X POST \
-  http://localhost:18090/api/connections/{connection-id}/camera-active-job-polling/ \
+  http://localhost:18071/api/connections/{connection-id}/camera-active-job-polling/ \
   -H 'Content-Type: application/json' \
   -d '{
     "printer_id": "lux01",
@@ -310,7 +310,7 @@ Histogram
 Open:
 
 ```text
-http://localhost:18090/metrics
+http://localhost:18071/metrics
 ```
 
 or query Prometheus:

@@ -4,8 +4,8 @@
 
 This document explains how BenchChef metrics are produced.
 
-For the HTTP interface contract and the SpaghettiChef endpoints called by
-BenchChef, see [API.md](API.md).
+For SpaghettiChef facts required by BenchChef, see
+[spaghettichef-compatibility.md](spaghettichef-compatibility.md).
 
 ## Data Flow
 
@@ -31,6 +31,13 @@ Grafana Dashboard
 | Probe status code   | benchchef_probe_http_status_total | Counter   | HTTP distribution |
 | Probe latency_ms    | benchchef_probe_duration_seconds  | Histogram | Latency analysis  |
 | Health probe result | benchchef_spaghettichef_up        | Gauge     | Availability      |
+
+These are BenchChef-generated metrics. They describe what BenchChef observed
+from probes or derived from imported observations.
+
+SpaghettiChef does not expose Prometheus metrics in the current local
+architecture. BenchChef converts observations into statistics, Prometheus
+metrics, and Grafana dashboards.
 
 ## Metric Types
 
@@ -110,3 +117,27 @@ CAMERA_JOB_ACTIVE_PROBE
 CAMERA_JOB_PROGRESS_PROBE
 CAMERA_JOB_TIMELINE_PROBE
 ```
+
+## SpaghettiChef Observation Sources
+
+BenchChef metrics are derived from SpaghettiChef REST/JSON observations and
+BenchChef probe timing. SpaghettiChef does not need to expose Prometheus
+metrics for the 0.8 Grafana observability work.
+
+| BenchChef observation | SpaghettiChef endpoint | Derived metric/statistic |
+| --------------------- | ---------------------- | ------------------------ |
+| Health probe | `GET /health` | availability, up/down, error rate, latency |
+| Version probe | `GET /version` | runtime version context |
+| Monitoring probe | `GET /monitoring` | runtime state context |
+| Dashboard asset probe | `GET /dashboard/index.html` | dashboard asset latency and errors |
+| Active camera job probe | `GET /printers/{printer_id}/camera/jobs/active` | active job availability and snapshot movement |
+| Camera job progress probe | `GET /admin/printers/{printer_id}/camera/jobs/{camera_job_id}/progress` | duration, snapshot count, snapshots per second |
+| Camera job timeline probe | `GET /admin/printers/{printer_id}/camera/jobs/{camera_job_id}/timeline` | event timing and state transitions |
+| Storage summary observation | `GET /admin/printers/{printer_id}/camera/storage/summary` | storage growth, retained snapshot count, missing file count |
+| Delta set observation | `GET /admin/printers/{printer_id}/camera/jobs/{camera_job_id}/delta-sets` | delta set count and generation status |
+| Delta frame observation | `GET /admin/printers/{printer_id}/camera/delta-sets/{delta_set_id}/frames` | delta frame count and frame-level scores |
+| Calculation run observation | `GET /admin/printers/{printer_id}/camera/delta-sets/{delta_set_id}/calculation-runs` | calculation duration and result count |
+| Calculation result observation | `GET /admin/camera/calculation-runs/{calculation_run_id}/results` | suspected result count and processing time |
+
+Host CPU, RAM, disk, and process metrics come from external exporters documented
+in [system-metrics.md](system-metrics.md), not from SpaghettiChef REST.

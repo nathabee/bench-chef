@@ -40,7 +40,8 @@ payload validation
 ## Reserved API Direction
 
 These names are draft placeholders for the central sync contract. Keep them
-stable once implementation starts, then promote them to `docs/API.md`.
+stable once implementation starts, then promote them to the relevant BenchChef
+boundary document.
 
 ```text
 POST /api/central/observations/import/

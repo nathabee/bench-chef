@@ -3,7 +3,7 @@
 ## Status
 
 ```text
-PLANNED
+DONE
 ```
 
 ## Purpose
@@ -23,6 +23,18 @@ Prometheus scrape configuration
 metric documentation
 ```
 
+## Implemented Files
+
+```text
+docker-compose.yml
+prometheus/prometheus.yml.template
+prometheus/process-exporter.yml
+docs/system-metrics.md
+docs/install.md
+docs/test.md
+README.md
+```
+
 ## Candidate Metric Sources
 
 ```text
@@ -39,4 +51,34 @@ BenchChef exporter  benchmark-specific metrics
 Prometheus can scrape external system metrics
 Grafana can later combine system metrics with BenchChef probe metrics
 SpaghettiChef does not need code changes for this step
+```
+
+## Test
+
+Start the stack:
+
+```bash
+./scripts/start.sh
+```
+
+Open:
+
+```text
+http://localhost:18073/targets
+```
+
+Expected targets:
+
+```text
+node-exporter      UP
+process-exporter   UP
+```
+
+Useful Prometheus queries:
+
+```text
+node_memory_MemAvailable_bytes
+rate(node_cpu_seconds_total[5m])
+rate(namedprocess_namegroup_cpu_seconds_total[5m])
+namedprocess_namegroup_memory_bytes
 ```

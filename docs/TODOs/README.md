@@ -6,7 +6,7 @@ Use this folder for implementation-level planning.
 roadmap.md          current architecture direction
 TODOs/README.md    index and planning rules
 TODO.*.md          detailed work notes for one version line
-API.md             stable HTTP interface contract
+spaghettichef-compatibility.md  BenchChef expectations for SpaghettiChef
 ```
 
 ## Rule Of Thumb
@@ -19,7 +19,8 @@ the version-specific TODO file.
 
 If a future API name might already affect SpaghettiChef or a client, keep the
 planned name in the relevant TODO file and later promote it to
-[../API.md](../API.md) when implemented.
+[../spaghettichef-compatibility.md](../spaghettichef-compatibility.md)
+or the relevant boundary document when implemented.
 
 ## Version Files
 
@@ -31,7 +32,7 @@ planned name in the relevant TODO file and later promote it to
 | 0.4.x | DONE | [TODO.0.4-BlackBox.md](TODO.0.4-BlackBox.md) |
 | 0.5.x | DONE | [TODO.0.5-Prometheus.md](TODO.0.5-Prometheus.md) |
 | 0.6.x | IN PROGRESS | [TODO.0.6-Grafana1.md](TODO.0.6-Grafana1.md) |
-| 0.7.x | PLANNED | [TODO.0.7-External-System-Metrics.md](TODO.0.7-External-System-Metrics.md) |
+| 0.7.x | DONE | [TODO.0.7-External-System-Metrics.md](TODO.0.7-External-System-Metrics.md) |
 | 0.8.x | PLANNED | [TODO.0.8-Grafana-Observability.md](TODO.0.8-Grafana-Observability.md) |
 | 0.9.x | PLANNED | [TODO.0.9-Angular-Workbench.md](TODO.0.9-Angular-Workbench.md) |
 | 0.10.x | PLANNED | [TODO.0.10-Benchmark-Scenario-Runner.md](TODO.0.10-Benchmark-Scenario-Runner.md) |

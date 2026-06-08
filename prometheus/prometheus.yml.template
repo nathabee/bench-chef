@@ -6,6 +6,10 @@ scrape_configs:
     static_configs:
       - targets: ["host.docker.internal:${BENCHCHEF_BACKEND_PORT}"]
 
-  - job_name: "spaghettichef"
+  - job_name: "node-exporter"
     static_configs:
-      - targets: ["host.docker.internal:${PORTSPAGHETTICHEF}"]
+      - targets: ["node-exporter:9100"]
+
+  - job_name: "process-exporter"
+    static_configs:
+      - targets: ["process-exporter:9256"]
