@@ -53,9 +53,9 @@ DONE show latency summary and failures
 ### 0.9.5 — Benchmarks
 
 ```text
-list benchmark runs
-show status and scenario
-link runs to probe samples where available
+DONE list benchmark runs
+DONE show status and scenario
+TODO link runs to probe samples where available
 ```
 
 ### 0.9.6 — Reports

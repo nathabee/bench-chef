@@ -1,2 +1,63 @@
-<h1>Benchmarks</h1>
-<p>Scenario launcher and run history will be implemented in the next 0.9 slice.</p>
+<header class="page-header">
+  <div>
+    <h1>Benchmarks</h1>
+    <p>Run history and scenario status from the BenchChef backend.</p>
+  </div>
+
+  <button type="button" (click)="refresh()">Refresh</button>
+</header>
+
+@if (errorMessage) {
+  <div class="notice error">{{ errorMessage }}</div>
+}
+
+<section class="summary-grid">
+  <article>
+    <span>Total</span>
+    <strong>{{ runs.length }}</strong>
+  </article>
+  <article>
+    <span>Running</span>
+    <strong>{{ statusCount('RUNNING') }}</strong>
+  </article>
+  <article>
+    <span>Completed</span>
+    <strong>{{ statusCount('COMPLETED') }}</strong>
+  </article>
+  <article>
+    <span>Failed</span>
+    <strong>{{ statusCount('FAILED') }}</strong>
+  </article>
+</section>
+
+<section class="run-table">
+  <div class="table-header">
+    <span>Name</span>
+    <span>Scenario</span>
+    <span>Status</span>
+    <span>Target</span>
+    <span>Updated</span>
+  </div>
+
+  @for (run of runs; track run.id) {
+    <article class="table-row">
+      <span>
+        <strong>{{ run.name }}</strong>
+        @if (run.message) {
+          <small>{{ run.message }}</small>
+        }
+      </span>
+      <span>{{ run.scenario_name || 'n/a' }}</span>
+      <span>
+        <mark [class]="run.status.toLowerCase()">{{ run.status }}</mark>
+      </span>
+      <span>{{ run.target_base_url || 'n/a' }}</span>
+      <span>{{ run.updated_at | date:'short' }}</span>
+    </article>
+  } @empty {
+    <article class="empty-state">
+      <h2>No benchmark runs</h2>
+      <p>Runs created by diagnostics history or future scenario launchers will appear here.</p>
+    </article>
+  }
+</section>
