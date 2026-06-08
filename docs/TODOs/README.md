@@ -33,7 +33,7 @@ or the relevant boundary document when implemented.
 | 0.5.x | DONE | [TODO.0.5-Prometheus.md](TODO.0.5-Prometheus.md) |
 | 0.6.x | IN PROGRESS | [TODO.0.6-Grafana1.md](TODO.0.6-Grafana1.md) |
 | 0.7.x | DONE | [TODO.0.7-External-System-Metrics.md](TODO.0.7-External-System-Metrics.md) |
-| 0.8.x | PLANNED | [TODO.0.8-Grafana-Observability.md](TODO.0.8-Grafana-Observability.md) |
+| 0.8.x | DONE | [TODO.0.8-Grafana-Observability.md](TODO.0.8-Grafana-Observability.md) |
 | 0.9.x | PLANNED | [TODO.0.9-Angular-Workbench.md](TODO.0.9-Angular-Workbench.md) |
 | 0.10.x | PLANNED | [TODO.0.10-Benchmark-Scenario-Runner.md](TODO.0.10-Benchmark-Scenario-Runner.md) |
 | 1.0.x | PLANNED | [TODO.1.0-BenchChef-Central-Sync-Boundary.md](TODO.1.0-BenchChef-Central-Sync-Boundary.md) |

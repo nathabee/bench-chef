@@ -93,10 +93,11 @@ Dashboard definitions are stored in:
 grafana/dashboards/
 ```
 
-Current dashboard:
+Current dashboards:
 
 ```text
 benchchef-first-dashboard.json
+benchchef-observability-v08.json
 ```
 
 The dashboard is loaded automatically at startup.
@@ -131,6 +132,7 @@ After login, open:
 Dashboards
 BenchChef
 BenchChef First Dashboard
+BenchChef Observability 0.8
 ```
 
 Grafana should already have:
@@ -139,6 +141,7 @@ Grafana should already have:
 Prometheus datasource
 BenchChef dashboard folder
 BenchChef First Dashboard
+BenchChef Observability 0.8
 ```
 
 No manual datasource setup or dashboard import should be required.
@@ -210,6 +213,32 @@ dashboard asset latency
 This dashboard does not include CPU, RAM, disk, or process metrics yet.
 
 No external exporters are required for this dashboard.
+
+The 0.8 observability dashboard combines BenchChef probe metrics with external
+system metrics.
+
+Expected 0.8 panels:
+
+```text
+SpaghettiChef up/down
+probe requests
+probe failures
+timeouts
+probe latency p95
+HTTP status counts
+dashboard asset latency p95
+camera probe latency p95
+benchmark probe volume
+host CPU
+host RAM
+filesystem availability
+process CPU
+process memory
+host load
+disk read/write throughput
+```
+
+The 0.8 dashboard does not require any SpaghettiChef interface changes.
 
 ## Prometheus Queries
 

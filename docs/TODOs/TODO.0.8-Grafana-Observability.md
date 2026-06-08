@@ -3,7 +3,7 @@
 ## Status
 
 ```text
-PLANNED
+DONE
 ```
 
 ## Purpose
@@ -65,3 +65,13 @@ Grafana shows whether SpaghettiChef is healthy, degraded, slow, down, or resourc
 Dashboards use versioned JSON files
 Dashboards are provisioned automatically
 ```
+
+## Implemented
+
+```text
+grafana/dashboards/benchchef-observability-v08.json
+```
+
+The 0.8 dashboard uses only existing BenchChef Prometheus metrics plus
+`node_exporter` and `process-exporter` metrics. It does not change the
+SpaghettiChef REST interface.
