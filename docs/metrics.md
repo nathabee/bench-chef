@@ -4,6 +4,9 @@
 
 This document explains how BenchChef metrics are produced.
 
+For the HTTP interface contract and the SpaghettiChef endpoints called by
+BenchChef, see [API.md](API.md).
+
 ## Data Flow
 
 ```text

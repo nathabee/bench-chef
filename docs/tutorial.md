@@ -1,4 +1,4 @@
-# Tutorial Promotheus/Django/Grafana 
+# Tutorial Prometheus/Django/Grafana
 
 ```text
 curl calls BenchChef API

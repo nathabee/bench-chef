@@ -30,13 +30,13 @@ nohup python manage.py runserver \
 
 echo $! > /tmp/benchchef-backend.pid
 
-cd ~/coding/github/bench-chef/frontend-angular
-nohup ng serve \
-  --host 0.0.0.0 \
-  --port "$BENCHCHEF_FRONTEND_PORT" \
-  > frontend.log 2>&1 &
+#cd ~/coding/github/bench-chef/frontend-angular
+#nohup ng serve \
+#  --host 0.0.0.0 \
+#  --port "$BENCHCHEF_FRONTEND_PORT" \
+#  > frontend.log 2>&1 &
 
-echo $! > /tmp/benchchef-frontend.pid
+#echo $! > /tmp/benchchef-frontend.pid
 
 echo "Waiting for BenchChef backend on port $BENCHCHEF_BACKEND_PORT..."
 

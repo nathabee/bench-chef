@@ -1,455 +1,198 @@
 # BenchChef Roadmap
 
-BenchChef is a standalone performance supervision and benchmark workbench for SpaghettiChef.
-
-SpaghettiChef remains operational and lightweight. BenchChef observes it from outside.
-
-## Architecture
-
-```text
-BenchChef
-├── frontend-angular/
-│   └── control UI, run history, reports, Grafana links
-│
-├── backend-django/
-│   └── API probing, benchmark runner, result storage, report generation
-│
-├── prometheus/
-│   └── scrape BenchChef, exporters, blackbox probes
-│
-├── grafana/
-│   └── dashboards for latency, availability, CPU, RAM, disk, benchmark runs
-│
-├── scenarios/
-│   └── benchmark definitions
-│
-├── reports/
-│   └── generated benchmark reports
-│
-└── docs/
-    └── architecture, screenshots, portfolio explanation
-```
-
-## Core Principle
+BenchChef is a performance supervision and benchmark workbench for
+SpaghettiChef.
 
 ```text
 SpaghettiChef does the work.
 BenchChef measures the work.
 ```
 
-BenchChef uses:
+This roadmap describes the next architecture direction. Detailed
+implementation tasks live in the per-version TODO files under [TODOs](TODOs/).
+The current HTTP contract is documented in [API.md](API.md).
+
+## Current Baseline
+
+BenchChef currently focuses on a local deployment close to one SpaghettiChef
+runtime.
 
 ```text
-black-box monitoring first
-external OS/process metrics second
-SpaghettiChef internal metrics only later if really needed
+SpaghettiChef Local
+  exposes local REST APIs
+  controls printers
+  handles cameras
+  creates pictures, snapshots, and deltas
+
+BenchChef Local
+  calls SpaghettiChef Local REST APIs
+  measures availability, HTTP status, latency, errors, and timeouts
+  stores probe and benchmark observations
+  exposes Prometheus metrics
+  supports local Grafana dashboards
 ```
 
----
+## Next Major Goal
 
-# 0.1.x — Project Foundation
+The next architecture goal is to support a central BenchChef deployment on a
+VPS that mirrors monitoring data from one or more LAN-based BenchChef Local
+instances.
 
-## Purpose
+BenchChef Central must communicate with BenchChef Local, not with
+SpaghettiChef Local.
 
-Create the complete BenchChef project skeleton.
+This keeps operational printer and camera APIs inside the LAN. BenchChef Local
+is the safe boundary component that may access SpaghettiChef Local. BenchChef
+Central should only receive monitoring, benchmark, and observation data that
+has already been collected or prepared by BenchChef Local.
 
-## Scope
+## BenchChef Central Architecture
+
+### SpaghettiChef Local
+
+SpaghettiChef Local remains the operational system.
 
 ```text
-Django backend project
-Angular frontend project
-Docker Compose foundation
-Prometheus folder
-Grafana folder
-scenario folder
-report folder
-README
-environment configuration
+controls printers
+handles cameras
+creates pictures, snapshots, and deltas
+exposes local REST APIs used by BenchChef Local
 ```
 
-## Outcome
+### BenchChef Local
 
-BenchChef starts as a structured project with clear frontend/backend/monitoring separation.
-
----
-
-# 0.2.x — Django Backend Foundation
-
-## Purpose
-
-Create the backend/runner layer.
-
-## Scope
+BenchChef Local remains close to SpaghettiChef Local inside the same LAN.
 
 ```text
-Django project
-Django REST Framework
-SQLite for local development
-connection profile model
-benchmark run model
-benchmark sample model
-health endpoint
-admin interface
-basic API structure
+calls local SpaghettiChef REST APIs
+measures local REST latency
+measures camera job duration
+measures image-processing calculation duration where available
+measures availability, errors, and timeouts
+collects machine and resource indicators where possible
+stores or prepares already-computed monitoring observations
+may continue to use local Prometheus and Grafana for local debugging
+syncs prepared observations outward to BenchChef Central
 ```
 
-## Initial Django Apps
+### BenchChef Central
+
+BenchChef Central runs alone on a VPS.
 
 ```text
-connections
-benchmarks
-probes
-reports
+has its own backend
+has its own frontend
+has its own database
+has its own Prometheus
+has its own Grafana
+receives or imports monitoring data from BenchChef Local instances
+keeps a central registry of BenchChef Local nodes and farms
+stores central observation history
+provides central dashboards across multiple LAN farms
 ```
 
-## Outcome
+BenchChef Central must not directly call SpaghettiChef Local REST APIs.
+BenchChef Central must not depend on SpaghettiChef Central.
 
-Django can store BenchChef configuration and benchmark data.
-
----
-
-# 0.3.x — SpaghettiChef Connection
-
-## Purpose
-
-Connect BenchChef to a SpaghettiChef runtime.
-
-## Scope
+## Target Architecture
 
 ```text
-base URL configuration
-optional role header
-GET /health probe
-GET /version probe
-GET /monitoring probe
-connection status
-latency measurement
-timeout handling
-error handling
+LAN Farm
+├── SpaghettiChef Local
+│   ├── controls printers
+│   ├── handles cameras
+│   ├── creates pictures/snapshots/deltas
+│   └── exposes local REST APIs
+│
+└── BenchChef Local
+    ├── probes SpaghettiChef Local
+    ├── stores/prepares monitoring observations
+    ├── may expose local Prometheus/Grafana for debugging
+    └── syncs observations outward
+
+VPS
+└── BenchChef Central
+    ├── receives observations from BenchChef Local
+    ├── stores central observation history
+    ├── exposes central dashboards
+    └── provides Prometheus/Grafana central visualization
 ```
 
-## SpaghettiChef Read-Only Calls
+## Connection Model
+
+Prefer secure outbound sync from BenchChef Local to BenchChef Central.
+
+This avoids exposing LAN services publicly.
+
+The first implementation may use:
 
 ```text
-GET /health
-GET /version
-GET /monitoring
-GET /dashboard/index.html
-GET /printers/{printerId}/camera/jobs/active
-GET /admin/printers/{printerId}/camera/jobs
-GET /admin/printers/{printerId}/camera/jobs/{cameraJobId}/progress
-GET /admin/printers/{printerId}/camera/jobs/{cameraJobId}/timeline
+HTTPS
+API token authentication
+idempotent observation import
+clear farm/runtime identity fields
 ```
 
-## Outcome
+A later deployment may use WireGuard or another private network. That private
+network must remain optional and must not make SpaghettiChef Central mandatory.
 
-BenchChef can check whether SpaghettiChef is reachable and responsive.
-
----
-
-# 0.4.x — Black-Box Performance Probes
-
-## Purpose
-
-Measure SpaghettiChef from outside.
-
-## Scope
+The sync payload should contain:
 
 ```text
-HTTP latency
-HTTP status
-timeout count
-error count
-p50 / p95 / p99 response time
-dashboard asset load time
-camera job polling
-snapshot count over time
-snapshot throughput
-slowdown detection
+farm identity
+BenchChef Local node identity
+SpaghettiChef runtime identity
+timestamps
+probe results
+benchmark results
+status summaries
+latency and duration measurements
+availability and error observations
+machine/resource indicators where available
 ```
 
-## Probe Types
+The sync payload must not include printer-control actions.
+
+## Architectural Assumption
+
+SpaghettiChef Central may never be developed.
+
+BenchChef Central must therefore be architecturally independent. It must not
+require a SpaghettiChef Central farm directory, registry, or control plane.
+
+BenchChef Central should maintain its own registry of BenchChef Local nodes and
+farms.
+
+## Practical Next Step
+
+The next design work should define the BenchChef Local to BenchChef Central
+sync boundary:
 
 ```text
-HEALTH_PROBE
-VERSION_PROBE
-MONITORING_PROBE
-DASHBOARD_ASSET_PROBE
-CAMERA_JOB_ACTIVE_PROBE
-CAMERA_JOB_PROGRESS_PROBE
-CAMERA_JOB_TIMELINE_PROBE
+local node/farm identity model
+central registry model
+observation payload shape
+authentication model
+import/deduplication behavior
+central storage model
+central dashboard data model
+failure and retry behavior for offline LANs
 ```
 
-## Outcome
+Keep SpaghettiChef-facing probe APIs documented separately in [API.md](API.md).
+Only promote new central sync endpoints to the API contract when implementation
+starts.
 
-BenchChef can measure backend and dashboard responsiveness without SpaghettiChef internal metrics.
+## Non-Goals
 
----
+Do not make BenchChef Central control printers.
 
-# 0.5.x — Prometheus Integration
+Do not make BenchChef Central call SpaghettiChef Local directly.
 
-## Purpose
+Do not require SpaghettiChef Central.
 
-Expose BenchChef-measured metrics to Prometheus.
+Do not expose local printer or camera REST APIs to the public internet.
 
-## Scope
+Do not duplicate SpaghettiChef operational responsibilities inside BenchChef.
 
-```text
-BenchChef /metrics endpoint
-Prometheus scrape config
-benchmark run metrics
-HTTP probe metrics
-camera throughput metrics
-error metrics
-timeout metrics
-```
-
-## Example Metrics
-
-```text
-benchchef_probe_requests_total
-benchchef_probe_failures_total
-benchchef_probe_duration_seconds
-benchchef_spaghettichef_up
-benchchef_camera_snapshots_observed_total
-benchchef_camera_snapshots_per_second
-benchchef_benchmark_run_duration_seconds
-```
-
-## Outcome
-
-Prometheus stores BenchChef measurements.
-
----
-# 0.6.x — Grafana First Dashboard
-
-## Purpose
-
-Create the first useful Grafana dashboard from the metrics already exposed by BenchChef.
-
-This is an early visualization step.
-
-It uses only existing BenchChef / Prometheus data.
-
-## Scope
-
-```text
-Grafana Prometheus datasource
-first BenchChef dashboard
-probe request count panel
-probe failure count panel
-probe latency panel
-SpaghettiChef up/down panel
-HTTP status panel
-dashboard asset latency panel
-```
-
-## Metrics Used
-
-```text
-benchchef_probe_requests_total
-benchchef_probe_failures_total
-benchchef_probe_duration_seconds
-benchchef_probe_http_status_total
-benchchef_probe_timeout_total
-benchchef_spaghettichef_up
-```
-
-## Outcome
-
-Grafana can already show whether BenchChef sees SpaghettiChef as reachable, responsive, slow, or failing.
-
-This version does not yet include CPU, RAM, disk, or process metrics.
-
----
-
-
-
-
-
-# 0.7.x — External System Metrics
-
-## Purpose
-
-Monitor CPU, RAM, disk, and process behavior externally.
-
-## Scope
-
-```text
-node_exporter setup
-process-exporter setup
-optional cAdvisor setup
-Prometheus scrape config
-metric documentation
-```
-
-## Metrics Source
-
-```text
-node_exporter       machine CPU/RAM/disk
-process-exporter    SpaghettiChef process CPU/RAM
-cAdvisor            container metrics, if Docker is used
-blackbox_exporter   external HTTP reachability, optional
-BenchChef exporter  benchmark-specific metrics
-```
-
-## Outcome
-
-BenchChef/Grafana can correlate SpaghettiChef performance with machine/process resource usage.
-
----
-
-# 0.8.x — Grafana Observability Dashboards
-
-## Purpose
-
-Build the complete Grafana observability layer after external system metrics are available.
-
-This is the second Grafana step.
-
-It combines BenchChef probe metrics with machine and process metrics.
-
-## Scope
-
-```text
-SpaghettiChef availability dashboard
-API latency dashboard
-dashboard asset latency dashboard
-camera job observation dashboard
-error and timeout dashboard
-CPU dashboard
-RAM dashboard
-disk dashboard
-process resource dashboard
-benchmark run dashboard
-```
-
-## Metrics Used
-
-```text
-BenchChef Prometheus metrics
-node_exporter metrics
-process-exporter metrics
-optional cAdvisor metrics
-optional blackbox_exporter metrics
-```
-
-## Outcome
-
-Grafana shows whether SpaghettiChef is healthy, degraded, slow, down, resource-limited, or recovering.
-
-This version becomes the main technical observability view for the portfolio demonstration.
-
----
-
-# 0.9.x — Angular Workbench UI
-
-### Purpose
-
-Provide the BenchChef interface.
-
-### Scope
-
-```text
-connection management
-probe launcher
-scenario launcher
-run status
-run history
-metric summaries
-Grafana links
-report browser
-settings
-```
-
-### Outcome
-
-Angular becomes the main UI for controlling BenchChef.
-
----
-
-# 0.10.x — Benchmark Scenario Runner
-
-## Purpose
-
-Execute repeatable benchmark scenarios.
-
-## Scope
-
-```text
-scenario definition model
-scenario registry
-health check scenario
-dashboard load scenario
-camera job observation scenario
-engine run observation scenario
-backend endurance scenario
-concurrent API probe scenario
-```
-
-## Outcome
-
-BenchChef can execute controlled performance tests and persist results.
-
----
-
-# 1.0.x — Reports And BenchChef Release
-
-## Purpose
-
-Make BenchChef demonstrable and documented.
-Integrate into Jenkins to send Release into Github 
-
-## Scope
-
-```text
-benchmark reports
-run comparison
-CSV export
-JSON export
-Markdown export
-HTML export
-README
-screenshots
-architecture documentation
-installation guide
-example dashboard screenshots
-example benchmark result
-```
-
----
-
-# Non-Goals
-
-BenchChef is not:
-
-```text
-a printer control dashboard
-a SpaghettiChef replacement
-a direct SQLite browser
-a direct filesystem browser
-an ML training tool
-a slicer
-a real-time print controller
-a safety controller
-```
-
-BenchChef must not directly trigger:
-
-```text
-heating
-movement
-homing
-fan control
-SD-card upload
-SD-card delete
-print start
-pause
-resume
-cancel
-emergency stop
-raw G-code
-camera capture
-```
-
-unless a later explicitly safe SpaghettiChef API is designed for that exact purpose.
+Do not include printer-control actions in central sync payloads.

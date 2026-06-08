@@ -61,8 +61,9 @@ Useful queries:
 ```text
 benchchef_probe_requests_total
 benchchef_probe_failures_total
-benchchef_probe_duration_seconds_count
+benchchef_probe_duration_seconds
 benchchef_probe_http_status_total
+benchchef_probe_timeout_total
 benchchef_spaghettichef_up
 ```
 
@@ -87,4 +88,6 @@ SpaghettiChef status visible
 probe counters visible
 latency graph visible
 HTTP status graph visible
+timeout count visible
+dashboard asset latency visible
 ```

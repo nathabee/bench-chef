@@ -1,4 +1,7 @@
 # TODO 0.3.x - Connection to SpaghettiChef
+
+HTTP interface contract: [../API.md](../API.md).
+
 ## TODO(DONE) 0.3.0 — SpaghettiChef Health Connection Probe
 
 ### Purpose

@@ -48,7 +48,7 @@ Prometheus datasource is working
 ---
 
 
-## TODO 0.6.1 — Grafana Dashboard Provisioning
+## TODO(DONE) 0.6.1 — Grafana Dashboard Provisioning
 
 ### Purpose
 
@@ -93,7 +93,7 @@ BenchChef dashboard appears
 
 ---
 
-## TODO 0.6.2 — First BenchChef Grafana Dashboard
+## TODO(DONE) 0.6.2 — First BenchChef Grafana Dashboard
 
 ### Purpose
 
@@ -217,7 +217,7 @@ values change
 
 ---
 
-## TODO 0.6.4 — Document Grafana Usage
+## TODO(DONE) 0.6.4 — Document Grafana Usage
 
 ### Purpose
 
@@ -270,6 +270,6 @@ no external exporters are required yet
 ```bash
 git status
 git add .
-git commit -m 'Add first Grafana dashboard'
+git commit -m '0.6.4 Add first Grafana dashboard'
 ```
  

@@ -171,8 +171,9 @@ Stop the local stack:
 ```text
 benchchef_probe_requests_total
 benchchef_probe_failures_total
-benchchef_probe_duration_seconds_count
+benchchef_probe_duration_seconds
 benchchef_probe_http_status_total
+benchchef_probe_timeout_total
 benchchef_spaghettichef_up
 ```
 
@@ -194,15 +195,20 @@ BenchChef First Dashboard
 
 The dashboard uses BenchChef metrics exported by Django and scraped by Prometheus.
 
+To generate data for the dashboard, run diagnostics and dashboard responsiveness
+probes as described in [docs/grafana.md](docs/grafana.md).
+
  
 
 ## Documentation
 
 * [Installation and Operation](docs/install.md)
 * [Smoke Tests](docs/test.md)
+* [API Contract](docs/API.md)
 * [Metrics Overview](docs/metrics.md)
 * [Grafana Integration](docs/grafana.md)
 * [Roadmap](docs/roadmap.md)
+* [Version TODOs](docs/TODOs/README.md)
 
 
 
