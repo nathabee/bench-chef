@@ -1,4 +1,67 @@
-<h1>dashboard</h1>
-<p>dashboard works!</p>
+<header class="page-header">
+  <div>
+    <h1>Dashboard</h1>
+    <p>BenchChef local status and recent probe summaries.</p>
+  </div>
 
- 
+  <button type="button" (click)="refresh()">Refresh</button>
+</header>
+
+@if (errorMessage) {
+  <div class="notice error">{{ errorMessage }}</div>
+}
+
+<section class="summary-grid">
+  <article class="summary-card">
+    <span class="label">Connections</span>
+    <strong>{{ connections.length }}</strong>
+    <a routerLink="/connections">Open connections</a>
+  </article>
+
+  <article class="summary-card">
+    <span class="label">Probe Samples</span>
+    <strong>{{ latencySummary?.count ?? 0 }}</strong>
+    <span>Latency observations</span>
+  </article>
+
+  <article class="summary-card">
+    <span class="label">Average Latency</span>
+    <strong>{{ latencySummary?.average_latency_ms ?? 'n/a' }}</strong>
+    <span>ms</span>
+  </article>
+
+  <article class="summary-card">
+    <span class="label">Failures</span>
+    <strong>{{ errorSummary?.failure_count ?? 0 }}</strong>
+    <a routerLink="/probes">Open probes</a>
+  </article>
+</section>
+
+<section class="panel-grid">
+  <article class="panel">
+    <h2>Latency</h2>
+    <dl>
+      <div>
+        <dt>p50</dt>
+        <dd>{{ latencySummary?.p50_latency_ms ?? 'n/a' }} ms</dd>
+      </div>
+      <div>
+        <dt>p95</dt>
+        <dd>{{ latencySummary?.p95_latency_ms ?? 'n/a' }} ms</dd>
+      </div>
+      <div>
+        <dt>p99</dt>
+        <dd>{{ latencySummary?.p99_latency_ms ?? 'n/a' }} ms</dd>
+      </div>
+    </dl>
+  </article>
+
+  <article class="panel">
+    <h2>Observability Links</h2>
+    <div class="link-row">
+      <a [href]="backendApi.prometheusUrl()" target="_blank" rel="noreferrer">Prometheus</a>
+      <a [href]="backendApi.grafanaUrl()" target="_blank" rel="noreferrer">Grafana</a>
+      <a [href]="backendApi.apiUrl('/metrics')" target="_blank" rel="noreferrer">BenchChef Metrics</a>
+    </div>
+  </article>
+</section>

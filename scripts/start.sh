@@ -47,9 +47,15 @@ done
 
 echo "BenchChef backend is reachable."
 
-echo "Starting diagnostics loop..."
+if [ "${BENCHCHEF_START_DIAGNOSTICS_LOOP:-false}" != "true" ]; then
+  echo "Diagnostics loop disabled."
+  echo "Use Angular at http://localhost:$BENCHCHEF_FRONTEND_PORT to launch probes."
+  exit 0
+fi
+
+echo "Starting diagnostics loop for connection $BENCHCHEF_DIAGNOSTICS_CONNECTION_ID..."
 
 while true; do
-  curl -fsS -X POST "http://localhost:$BENCHCHEF_BACKEND_PORT/api/connections/3/diagnostics/" >/dev/null || true
-  sleep 5
+  curl -fsS -X POST "http://localhost:$BENCHCHEF_BACKEND_PORT/api/connections/$BENCHCHEF_DIAGNOSTICS_CONNECTION_ID/diagnostics/" >/dev/null || true
+  sleep "${BENCHCHEF_DIAGNOSTICS_INTERVAL_SECONDS:-5}"
 done

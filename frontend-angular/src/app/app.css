@@ -45,3 +45,22 @@ nav a:hover {
   flex: 1;
   padding: 32px;
 }
+
+@media (max-width: 900px) {
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: auto;
+  }
+
+  nav {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  .content {
+    padding: 20px;
+  }
+}

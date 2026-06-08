@@ -1,3 +1,81 @@
-<h1>Connections</h1>
-<p>SpaghettiChef connection profiles and connection status.</p>
- 
+<header class="page-header">
+  <div>
+    <h1>Connections</h1>
+    <p>SpaghettiChef connection profiles and probe actions.</p>
+  </div>
+
+  <button type="button" (click)="refresh()">Refresh</button>
+</header>
+
+@if (errorMessage) {
+  <div class="notice error">{{ errorMessage }}</div>
+}
+
+@if (actionMessage) {
+  <div class="notice">{{ actionMessage }}</div>
+}
+
+<section class="connection-list">
+  @for (connection of connections; track connection.id) {
+    <article class="connection-card">
+      <div class="connection-main">
+        <div>
+          <h2>{{ connection.name }}</h2>
+          <p>{{ connection.base_url }}</p>
+        </div>
+
+        <span class="state" [class.disabled]="!connection.enabled">
+          {{ connection.enabled ? 'Enabled' : 'Disabled' }}
+        </span>
+      </div>
+
+      <dl>
+        <div>
+          <dt>Timeout</dt>
+          <dd>{{ connection.request_timeout_ms }} ms</dd>
+        </div>
+        <div>
+          <dt>Role</dt>
+          <dd>{{ connection.role_header || 'none' }}</dd>
+        </div>
+        <div>
+          <dt>Health path</dt>
+          <dd>{{ connection.health_path }}</dd>
+        </div>
+      </dl>
+
+      <div class="actions">
+        @for (probe of probeActions; track probe.action) {
+          <button
+            type="button"
+            [disabled]="busyConnectionId === connection.id"
+            (click)="runProbe(connection, probe.action)"
+          >
+            {{ probe.label }}
+          </button>
+        }
+
+        <button
+          type="button"
+          class="primary"
+          [disabled]="busyConnectionId === connection.id"
+          (click)="runDiagnostics(connection)"
+        >
+          Diagnostics
+        </button>
+      </div>
+    </article>
+  } @empty {
+    <article class="empty-state">
+      <h2>No connections</h2>
+      <p>Create a connection profile through the API or seed command first.</p>
+    </article>
+  }
+</section>
+
+@if (latestResult) {
+  <section class="result-panel">
+    <h2>Latest Result</h2>
+    <pre>{{ resultJson() }}</pre>
+  </section>
+}

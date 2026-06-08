@@ -1,2 +1,66 @@
-<h1>Probes</h1>
-<p>Black-box probes for backend, dashboard, and camera-job responsiveness.</p>
+<header class="page-header">
+  <div>
+    <h1>Probes</h1>
+    <p>Launch common BenchChef probes against a configured SpaghettiChef target.</p>
+  </div>
+</header>
+
+@if (message) {
+  <div class="notice">{{ message }}</div>
+}
+
+<section class="probe-layout">
+  <form class="panel">
+    <h2>Probe Settings</h2>
+
+    <label>
+      Connection
+      <select name="connection" [(ngModel)]="selectedConnectionId">
+        @for (connection of connections; track connection.id) {
+          <option [ngValue]="connection.id">{{ connection.name }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Probe type
+      <select name="probeType" [(ngModel)]="selectedProbeType">
+        @for (probeType of probeTypes; track probeType) {
+          <option [ngValue]="probeType">{{ probeType }}</option>
+        }
+      </select>
+    </label>
+
+    <label>
+      Repeat count
+      <input name="repeatCount" type="number" min="1" [(ngModel)]="repeatCount" />
+    </label>
+
+    <label>
+      Delay
+      <input name="delayMs" type="number" min="0" step="50" [(ngModel)]="delayMs" />
+    </label>
+
+    <label>
+      Printer id
+      <input name="printerId" type="text" [(ngModel)]="printerId" />
+    </label>
+  </form>
+
+  <section class="panel">
+    <h2>Actions</h2>
+
+    <div class="actions">
+      <button type="button" [disabled]="busy" (click)="runRepeatProbe()">Repeat Probe</button>
+      <button type="button" [disabled]="busy" (click)="runDashboardResponsiveness()">Dashboard Responsiveness</button>
+      <button type="button" [disabled]="busy" (click)="runCameraPolling()">Camera Polling</button>
+    </div>
+  </section>
+</section>
+
+@if (result) {
+  <section class="result-panel">
+    <h2>Result</h2>
+    <pre>{{ resultJson() }}</pre>
+  </section>
+}

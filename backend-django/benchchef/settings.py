@@ -27,6 +27,7 @@ DEBUG = True
 
 
 CORS_ALLOWED_ORIGINS = [
+    "http://localhost:18072",
     "http://localhost:4200",
 ]
 
