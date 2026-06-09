@@ -97,24 +97,24 @@ BenchChef
 
 | Version | Status      | Goal                                  |
 | ------- | ----------- | ------------------------------------- |
-| 0.1.x   | DONE        | Project foundation                    |
-| 0.2.x   | DONE        | Django backend foundation             |
-| 0.3.x   | DONE        | SpaghettiChef connection layer        |
-| 0.4.x   | DONE        | Black-box performance probes          |
-| 0.5.x   | DONE        | Prometheus integration                |
-| 0.6.x   | DONE        | First Grafana dashboard               |
-| 0.7.x   | DONE        | External system metrics               |
-| 0.8.x   | DONE        | Full Grafana observability dashboards |
-| 0.9.x   | IN PROGRESS | Angular workbench UI                  |
-| 0.10.x  | IN PROGRESS | Release packaging and remote install  |
-| 0.11.x  | PLANNED     | Benchmark scenario runner             |
-| 1.0.x   | PLANNED     | BenchChef Central sync boundary       |
-| 1.1.x   | PLANNED     | BenchChef Central backend             |
-| 1.2.x   | PLANNED     | BenchChef Central dashboards          |
-| 2.0.x   | PLANNED     | Reports and release workflow          |
-| 2.1.x   | PLANNED     | Support reports and PDF export        |
-| 3.0.x   | PLANNED     | Kotlin REST client                    |
-| 3.1.x   | PLANNED     | Android support client                |
+| 0.1.x   | DONE        | [Project foundation](docs/TODOs/TODO.0.1-Foundation.md) |
+| 0.2.x   | DONE        | [Django backend foundation](docs/TODOs/TODO.0.2-Backend.md) |
+| 0.3.x   | DONE        | [SpaghettiChef connection layer](docs/TODOs/TODO.0.3-SpaghettiChef-Connect.md) |
+| 0.4.x   | DONE        | [Black-box performance probes](docs/TODOs/TODO.0.4-BlackBox.md) |
+| 0.5.x   | DONE        | [Prometheus integration](docs/TODOs/TODO.0.5-Prometheus.md) |
+| 0.6.x   | DONE        | [First Grafana dashboard](docs/TODOs/TODO.0.6-Grafana.md) |
+| 0.7.x   | DONE        | [External system metrics](docs/TODOs/TODO.0.7-External-System-Metrics.md) |
+| 0.8.x   | DONE        | [Full Grafana observability dashboards](docs/TODOs/TODO.0.8-Grafana-Observability.md) |
+| 0.9.x   | IN PROGRESS | [Angular workbench UI](docs/TODOs/TODO.0.9-Angular-Workbench.md) |
+| 0.10.x  | IN PROGRESS | [Release packaging and remote install](docs/TODOs/TODO.0.10-Release.md) |
+| 0.11.x  | PLANNED     | [Benchmark scenario runner](docs/TODOs/TODO.0.11-Benchmark-Scenario-Runner.md) |
+| 1.0.x   | PLANNED     | [BenchChef Central sync boundary](docs/TODOs/TODO.1.0-BenchChef-Central-Sync-Boundary.md) |
+| 1.1.x   | PLANNED     | [BenchChef Central backend](docs/TODOs/TODO.1.1-BenchChef-Central-Backend.md) |
+| 1.2.x   | PLANNED     | [BenchChef Central dashboards](docs/TODOs/TODO.1.2-BenchChef-Central-Dashboards.md) |
+| 2.0.x   | PLANNED     | [Reports and release workflow](docs/TODOs/TODO.2.0-Reports-Release.md) |
+| 2.1.x   | PLANNED     | [Support reports and PDF export](docs/TODOs/TODO.2.1-Support-Reports-PDF.md) |
+| 3.0.x   | PLANNED     | [Kotlin REST client](docs/TODOs/TODO.3.0-Kotlin-REST-Client.md) |
+| 3.1.x   | PLANNED     | [Android support client](docs/TODOs/TODO.3.1-Android-Support-Client.md) |
 
 Detailed roadmap: [docs/roadmap.md](docs/roadmap.md).
 
