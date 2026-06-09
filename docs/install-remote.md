@@ -215,6 +215,19 @@ if (-not (Test-Path C:\benchchef\data\run.env)) {
 
 Review `C:\benchchef\data\run.env` and adjust ports if needed.
 
+`C:\benchchef\data\run.env` is the file you edit and keep.
+
+At start time, `C:\benchchef\bin\r.ps1` copies it to:
+
+```text
+C:\benchchef\app\.env
+```
+
+That generated app `.env` is used by Docker Compose and Django, but it is
+disposable. Do not edit `C:\benchchef\app\.env` directly because app updates may
+replace the whole `C:\benchchef\app` directory and `r.ps1` regenerates the file
+from `data\run.env`.
+
 Register the scheduled task:
 
 ```powershell
