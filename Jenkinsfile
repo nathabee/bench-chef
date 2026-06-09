@@ -194,19 +194,70 @@ PY
                 }
             }
             steps {
-                sh '''
-                    set -eu
-                    VERSION_VALUE="$(cat .jenkins-version)"
-                    TAG_NAME="v${VERSION_VALUE}"
-                    RELEASE_NAME_VALUE="${RELEASE_NAME:-}"
-                    TITLE="${RELEASE_NAME_VALUE:-BenchChef ${VERSION_VALUE}}"
+                withCredentials([string(credentialsId: 'github-token', variable: 'GITHUB_TOKEN')]) {
+                    sh '''
+                        set -eu
 
-                    gh release create "${TAG_NAME}" \
-                      dist/* \
-                      --repo "${GITHUB_REPO}" \
-                      --title "${TITLE}" \
-                      --notes "BenchChef ${VERSION_VALUE} local release."
-                '''
+                        VERSION_VALUE="$(cat .jenkins-version)"
+                        TAG_NAME="v${VERSION_VALUE}"
+                        RELEASE_NAME_VALUE="${RELEASE_NAME:-}"
+                        TITLE="${RELEASE_NAME_VALUE:-BenchChef ${VERSION_VALUE}}"
+
+                        API_JSON=$(mktemp)
+                        cat > "${API_JSON}" <<EOF
+{
+  "tag_name": "${TAG_NAME}",
+  "name": "${TITLE}",
+  "draft": false,
+  "prerelease": false,
+  "generate_release_notes": true
+}
+EOF
+
+                        curl -sS -X POST \
+                          -H "Accept: application/vnd.github+json" \
+                          -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                          "https://api.github.com/repos/${GITHUB_REPO}/releases" \
+                          -d @"${API_JSON}" \
+                          > github-release-response.json
+
+                        UPLOAD_URL="$("${PYTHON_BIN}" - <<'PY'
+import json
+
+with open("github-release-response.json", "r", encoding="utf-8") as f:
+    data = json.load(f)
+
+if "upload_url" not in data:
+    print("")
+else:
+    print(data["upload_url"].split("{")[0])
+PY
+)"
+
+                        if [ -z "${UPLOAD_URL}" ]; then
+                          echo "GitHub release creation did not return an upload URL." >&2
+                          cat github-release-response.json >&2
+                          exit 1
+                        fi
+
+                        for ARTIFACT in dist/*; do
+                          CONTENT_TYPE="application/octet-stream"
+                          case "${ARTIFACT}" in
+                            *.tar.gz) CONTENT_TYPE="application/gzip" ;;
+                            *.zip) CONTENT_TYPE="application/zip" ;;
+                            *.txt) CONTENT_TYPE="text/plain" ;;
+                          esac
+
+                          ARTIFACT_NAME="$(basename "${ARTIFACT}")"
+                          curl -sS -X POST \
+                            -H "Accept: application/vnd.github+json" \
+                            -H "Authorization: Bearer ${GITHUB_TOKEN}" \
+                            -H "Content-Type: ${CONTENT_TYPE}" \
+                            "${UPLOAD_URL}?name=${ARTIFACT_NAME}" \
+                            --data-binary @"${ARTIFACT}"
+                        done
+                    '''
+                }
             }
         }
     }

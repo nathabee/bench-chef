@@ -52,14 +52,15 @@ Work:
 * run backend tests
 * build Angular frontend
 * package release assets
-* optionally publish a GitHub release with `gh`
+* optionally publish a GitHub release through the GitHub REST API
+* use the Jenkins Secret Text credential `github-token` for GitHub publishing
 
 Acceptance:
 
 ```text
 Jenkins can build BenchChef from the selected branch
 Jenkins can create local release artifacts
-Jenkins can publish those artifacts to GitHub Releases when enabled
+Jenkins can publish those artifacts to GitHub Releases when enabled and authenticated
 ```
 
 ### 0.10.3 — Release Assets

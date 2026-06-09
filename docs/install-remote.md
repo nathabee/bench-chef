@@ -36,6 +36,28 @@ ops/      Linux admin helper scripts
 README.md
 ```
 
+## GitHub Release Publishing
+
+The Jenkins pipeline can publish these assets when:
+
+```text
+PUBLISH_GITHUB_RELEASE=true
+```
+
+Publishing uses the same Jenkins Secret Text credential convention as
+SpaghettiChef:
+
+```text
+credential id: github-token
+bound variable: GITHUB_TOKEN
+```
+
+For a packaging-only test, leave:
+
+```text
+PUBLISH_GITHUB_RELEASE=false
+```
+
 ## Windows Host Layout
 
 ```text
