@@ -1,0 +1,161 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOST="${BCHEF_HOST:-benchchef-win}"
+USER_NAME="${BCHEF_USER:-admin}"
+REMOTE_DIR="C:/benchchef/tmp"
+REMOTE_PS1="${REMOTE_DIR}/benchchef-diagnostic.ps1"
+REMOTE_RESPONSE="${REMOTE_DIR}/response.txt"
+LOCAL_RESPONSE="./response.txt"
+
+SSH_TARGET="${USER_NAME}@${HOST}"
+
+echo "remote: ${SSH_TARGET}"
+echo "remote dir: ${REMOTE_DIR}"
+
+TMP_PS1="$(mktemp)"
+trap 'rm -f "${TMP_PS1}"' EXIT
+
+cat > "${TMP_PS1}" <<'POWERSHELL'
+$Out = "C:\benchchef\tmp\response.txt"
+New-Item -ItemType Directory -Force -Path "C:\benchchef\tmp" | Out-Null
+
+"=== BenchChef diagnostic $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss') ===" | Set-Content -Path $Out
+
+"`n=== Current user ===" | Add-Content -Path $Out
+try {
+    whoami | Out-String | Add-Content -Path $Out
+}
+catch {
+    "ERROR reading current user: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Task Scheduler status ===" | Add-Content -Path $Out
+try {
+    Get-ScheduledTask -TaskName "BenchChef" |
+        Select-Object TaskName, State, TaskPath,
+            @{Name="UserId";Expression={$_.Principal.UserId}},
+            @{Name="LogonType";Expression={$_.Principal.LogonType}},
+            @{Name="RunLevel";Expression={$_.Principal.RunLevel}} |
+        Format-List |
+        Out-String |
+        Add-Content -Path $Out
+}
+catch {
+    "ERROR reading scheduled task: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Task Scheduler last run info ===" | Add-Content -Path $Out
+try {
+    Get-ScheduledTaskInfo -TaskName "BenchChef" |
+        Format-List |
+        Out-String |
+        Add-Content -Path $Out
+}
+catch {
+    "ERROR reading task info: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Java processes via Get-Process ===" | Add-Content -Path $Out
+try {
+    Get-Process java,javaw -ErrorAction SilentlyContinue |
+        Select-Object Id, ProcessName, Path, StartTime |
+        Format-List |
+        Out-String |
+        Add-Content -Path $Out
+}
+catch {
+    "ERROR reading java processes: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Java processes via tasklist ===" | Add-Content -Path $Out
+try {
+    tasklist /FI "IMAGENAME eq java.exe" /V | Out-String | Add-Content -Path $Out
+    tasklist /FI "IMAGENAME eq javaw.exe" /V | Out-String | Add-Content -Path $Out
+}
+catch {
+    "ERROR running tasklist: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== BenchChef port usage ===" | Add-Content -Path $Out
+try {
+    foreach ($Port in @("18071", "18072", "18073", "18074", "18075", "18076")) {
+        "--- port $Port ---" | Add-Content -Path $Out
+        netstat -ano | Select-String ":$Port" | Out-String | Add-Content -Path $Out
+    }
+}
+catch {
+    "ERROR running netstat: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== BenchChef folders ===" | Add-Content -Path $Out
+foreach ($Path in @("C:\benchchef", "C:\benchchef\app", "C:\benchchef\data", "C:\benchchef\log", "C:\benchchef\tmp", "C:\benchchef\bin")) {
+    "`n--- $Path ---" | Add-Content -Path $Out
+    if (Test-Path -LiteralPath $Path) {
+        Get-Item -LiteralPath $Path |
+            Select-Object FullName, Attributes, CreationTime, LastWriteTime |
+            Format-List |
+            Out-String |
+            Add-Content -Path $Out
+    }
+    else {
+        "MISSING" | Add-Content -Path $Out
+    }
+}
+
+"`n=== App directory content ===" | Add-Content -Path $Out
+try {
+    Get-ChildItem -LiteralPath "C:\benchchef\app" -Force |
+        Select-Object Name, Length, LastWriteTime, Attributes |
+        Format-Table -AutoSize |
+        Out-String |
+        Add-Content -Path $Out
+}
+catch {
+    "ERROR listing app directory: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Version file ===" | Add-Content -Path $Out
+try {
+    if (Test-Path -LiteralPath "C:\benchchef\app\VERSION") {
+        Get-Content -LiteralPath "C:\benchchef\app\VERSION" | Add-Content -Path $Out
+    }
+    else {
+        "C:\benchchef\app\VERSION missing" | Add-Content -Path $Out
+    }
+}
+catch {
+    "ERROR reading VERSION: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== Recent log files ===" | Add-Content -Path $Out
+try {
+    Get-ChildItem -LiteralPath "C:\benchchef\log" -Force -ErrorAction SilentlyContinue |
+        Select-Object Name, Length, LastWriteTime |
+        Format-Table -AutoSize |
+        Out-String |
+        Add-Content -Path $Out
+}
+catch {
+    "ERROR listing logs: $($_.Exception.Message)" | Add-Content -Path $Out
+}
+
+"`n=== End diagnostic ===" | Add-Content -Path $Out
+Write-Host "Wrote $Out"
+POWERSHELL
+
+echo "creating remote tmp directory..."
+ssh "${SSH_TARGET}" \
+  "powershell -NoProfile -ExecutionPolicy Bypass -Command \"New-Item -ItemType Directory -Force -Path '${REMOTE_DIR}' | Out-Null\""
+
+echo "uploading diagnostic script..."
+scp "${TMP_PS1}" "${SSH_TARGET}:${REMOTE_PS1}"
+
+echo "running diagnostic script..."
+ssh "${SSH_TARGET}" \
+  "powershell -NoProfile -ExecutionPolicy Bypass -Command \"& 'C:\\benchchef\\tmp\\benchchef-diagnostic.ps1'\""
+
+echo "downloading response..."
+scp "${SSH_TARGET}:${REMOTE_RESPONSE}" "${LOCAL_RESPONSE}"
+
+echo "diagnostic written to ${LOCAL_RESPONSE}"

@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOST="${BCHEF_HOST:-benchchef-win}"
+USER_NAME="${BCHEF_USER:-admin}"
+
+ssh "${USER_NAME}@${HOST}" "powershell -ExecutionPolicy Bypass -File C:\\benchchef\\bin\\v.ps1"

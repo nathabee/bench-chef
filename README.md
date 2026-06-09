@@ -103,11 +103,18 @@ BenchChef
 | 0.4.x   | DONE        | Black-box performance probes          |
 | 0.5.x   | DONE        | Prometheus integration                |
 | 0.6.x   | DONE        | First Grafana dashboard               |
-| 0.7.x   | PLANNED     | External system metrics               |
-| 0.8.x   | PLANNED     | Full Grafana observability dashboards |
-| 0.9.x   | PLANNED     | Angular workbench UI                  |
-| 0.10.x  | PLANNED     | Benchmark scenario runner             |
-| 1.0.x   | PLANNED     | Reports and BenchChef release         |
+| 0.7.x   | DONE        | External system metrics               |
+| 0.8.x   | DONE        | Full Grafana observability dashboards |
+| 0.9.x   | IN PROGRESS | Angular workbench UI                  |
+| 0.10.x  | IN PROGRESS | Release packaging and remote install  |
+| 0.11.x  | PLANNED     | Benchmark scenario runner             |
+| 1.0.x   | PLANNED     | BenchChef Central sync boundary       |
+| 1.1.x   | PLANNED     | BenchChef Central backend             |
+| 1.2.x   | PLANNED     | BenchChef Central dashboards          |
+| 2.0.x   | PLANNED     | Reports and release workflow          |
+| 2.1.x   | PLANNED     | Support reports and PDF export        |
+| 3.0.x   | PLANNED     | Kotlin REST client                    |
+| 3.1.x   | PLANNED     | Android support client                |
 
 Detailed roadmap: [docs/roadmap.md](docs/roadmap.md).
 
@@ -143,7 +150,7 @@ Prometheus
 Grafana
 node_exporter
 process-exporter
-diagnostics loop
+optional diagnostics loop
 ```
 
 Open:
@@ -209,6 +216,7 @@ Dashboard:
 
 ```text
 BenchChef First Dashboard
+BenchChef Observability 0.8
 ```
 
 The dashboard uses BenchChef metrics exported by Django and scraped by Prometheus.
@@ -226,6 +234,7 @@ probes as described in [docs/grafana.md](docs/grafana.md).
 * [Metrics Overview](docs/metrics.md)
 * [Grafana Integration](docs/grafana.md)
 * [External System Metrics](docs/system-metrics.md)
+* [Remote Install](docs/install-remote.md)
 * [Roadmap](docs/roadmap.md)
 * [Version TODOs](docs/TODOs/README.md)
 

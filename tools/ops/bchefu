@@ -1,0 +1,14 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+HOST="${BCHEF_HOST:-benchchef-win}"
+USER_NAME="${BCHEF_USER:-admin}"
+
+if [ $# -ne 1 ]; then
+  echo "usage: bchefu <version>"
+  exit 1
+fi
+
+VERSION="$1"
+
+ssh "${USER_NAME}@${HOST}" "powershell -ExecutionPolicy Bypass -File C:\\benchchef\\bin\\u.ps1 -Version ${VERSION}"

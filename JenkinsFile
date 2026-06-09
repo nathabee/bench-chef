@@ -1,0 +1,220 @@
+pipeline {
+    agent any
+
+    parameters {
+        string(
+            name: 'GIT_BRANCH',
+            defaultValue: 'develop',
+            description: 'Git branch to build, for example develop or main.'
+        )
+        string(
+            name: 'PYTHON_BIN',
+            defaultValue: 'python3',
+            description: 'Python executable used for Django checks and packaging.'
+        )
+        string(
+            name: 'NODE_HOME_OVERRIDE',
+            defaultValue: '',
+            description: 'Optional Node.js home. Leave empty to use the agent default.'
+        )
+        string(
+            name: 'RELEASE_VERSION',
+            defaultValue: '',
+            description: 'Optional release version, for example 0.10.0. Leave empty to use VERSION.'
+        )
+        string(
+            name: 'RELEASE_NAME',
+            defaultValue: '',
+            description: 'Optional GitHub release title. Leave empty for BenchChef <version>.'
+        )
+        booleanParam(
+            name: 'PUBLISH_GITHUB_RELEASE',
+            defaultValue: false,
+            description: 'Publish dist assets to GitHub Releases with gh. Only use for release builds.'
+        )
+    }
+
+    options {
+        timestamps()
+        disableConcurrentBuilds()
+        buildDiscarder(logRotator(numToKeepStr: '10', artifactNumToKeepStr: '10'))
+    }
+
+    environment {
+        GITHUB_REPO = 'nathabee/bench-chef'
+    }
+
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.GIT_BRANCH}"]],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/nathabee/bench-chef.git'
+                    ]]
+                ])
+            }
+        }
+
+        stage('Environment') {
+            steps {
+                script {
+                    if (params.NODE_HOME_OVERRIDE?.trim()) {
+                        env.PATH = "${params.NODE_HOME_OVERRIDE.trim()}/bin:${env.PATH}"
+                    }
+                }
+
+                sh '''
+                    set -eu
+                    echo "PATH=${PATH}"
+                    which "${PYTHON_BIN}"
+                    which node
+                    which npm
+                    which docker || true
+                    which gh || true
+                    "${PYTHON_BIN}" --version
+                    node --version
+                    npm --version
+                '''
+            }
+        }
+
+        stage('Resolve Version') {
+            steps {
+                sh '''
+                    set -eu
+                    if [ -n "${RELEASE_VERSION}" ]; then
+                      printf '%s\n' "${RELEASE_VERSION}" > VERSION
+                      tools/sync-version.sh
+                    else
+                      tools/check-version.sh
+                    fi
+
+                    VERSION_VALUE="$(tr -d '[:space:]' < VERSION)"
+                    printf '%s\n' "${VERSION_VALUE}" > .jenkins-version
+                    echo "BenchChef version: ${VERSION_VALUE}"
+                '''
+            }
+        }
+
+        stage('Backend Tests') {
+            steps {
+                sh '''
+                    set -eu
+                    cd backend-django
+                    "${PYTHON_BIN}" -m venv .venv-ci
+                    . .venv-ci/bin/activate
+                    pip install --upgrade pip
+                    pip install -r requirements.txt
+                    python manage.py test
+                '''
+            }
+        }
+
+        stage('Frontend Build') {
+            steps {
+                sh '''
+                    set -eu
+                    cd frontend-angular
+                    if [ -f package-lock.json ]; then
+                      npm ci
+                    else
+                      npm install
+                    fi
+                    npm run build
+                '''
+            }
+        }
+
+        stage('Package Release') {
+            steps {
+                sh '''
+                    set -eu
+
+                    VERSION_VALUE="$(cat .jenkins-version)"
+                    RELEASE_ARCHIVE="bench-chef-${VERSION_VALUE}-release.tar.gz"
+                    LINUX_PACKAGE="bench-chef-${VERSION_VALUE}-linux.tar.gz"
+                    WINDOWS_PACKAGE="bench-chef-${VERSION_VALUE}-windows.zip"
+                    ADMIN_PACKAGE="bench-chef-${VERSION_VALUE}-admin.zip"
+
+                    rm -rf package dist
+                    mkdir -p package/linux/bench-chef package/windows/bench-chef package/admin dist
+
+                    copy_runtime() {
+                      DEST="$1"
+                      mkdir -p "${DEST}"
+                      cp VERSION "${DEST}/"
+                      cp README.md LICENSE docker-compose.yml .env.example "${DEST}/"
+                      cp -R backend-django frontend-angular/dist grafana prometheus scripts docs "${DEST}/"
+                      find "${DEST}" -type d -name __pycache__ -prune -exec rm -rf {} +
+                      rm -rf "${DEST}/backend-django/.venv" "${DEST}/backend-django/.venv-ci"
+                      rm -f "${DEST}/backend-django/db.sqlite3" "${DEST}/backend-django/backend.log"
+                    }
+
+                    copy_runtime package/linux/bench-chef
+                    copy_runtime package/windows/bench-chef
+
+                    cp -R tools/win package/admin/win
+                    cp -R tools/ops package/admin/ops
+                    cp tools/README.md package/admin/README.md
+
+                    tar -C package/linux -czf "dist/${LINUX_PACKAGE}" bench-chef
+
+                    "${PYTHON_BIN}" - <<PY
+import pathlib
+import zipfile
+
+for source, target in [
+    ("package/windows/bench-chef", "dist/${WINDOWS_PACKAGE}"),
+    ("package/admin", "dist/${ADMIN_PACKAGE}"),
+]:
+    source_path = pathlib.Path(source)
+    with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
+        for path in source_path.rglob("*"):
+            if path.is_file():
+                zf.write(path, path.relative_to(source_path.parent))
+PY
+
+                    tar -C package -czf "dist/${RELEASE_ARCHIVE}" linux windows admin
+
+                    sha256sum dist/* > dist/SHA256SUMS.txt
+                    ls -lh dist
+                '''
+
+                archiveArtifacts artifacts: 'dist/*', fingerprint: true
+            }
+        }
+
+        stage('Publish GitHub Release') {
+            when {
+                expression {
+                    return params.PUBLISH_GITHUB_RELEASE
+                }
+            }
+            steps {
+                sh '''
+                    set -eu
+                    VERSION_VALUE="$(cat .jenkins-version)"
+                    TAG_NAME="v${VERSION_VALUE}"
+                    TITLE="${RELEASE_NAME:-BenchChef ${VERSION_VALUE}}"
+
+                    gh release create "${TAG_NAME}" \
+                      dist/* \
+                      --repo "${GITHUB_REPO}" \
+                      --title "${TITLE}" \
+                      --notes "BenchChef ${VERSION_VALUE} local release."
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo 'BenchChef release pipeline completed successfully.'
+        }
+        failure {
+            echo 'BenchChef release pipeline failed. Check backend tests, frontend build, and package logs.'
+        }
+    }
+}
