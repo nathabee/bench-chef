@@ -46,7 +46,7 @@ PY
 check_equals "frontend-angular/package.json version" "${ANGULAR_VERSION}"
 
 if rg -n 'spaghetti-chef-[^[:space:]]+-release|nathabee/spaghetti-chef|spaghetti-chef.git' \
-    "${ROOT_DIR}/JenkinsFile" \
+    "${ROOT_DIR}/Jenkinsfile" \
     "${ROOT_DIR}/tools/README.md" \
     "${ROOT_DIR}/tools/win" \
     "${ROOT_DIR}/tools/ops" >/dev/null; then
