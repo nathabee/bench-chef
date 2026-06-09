@@ -35,9 +35,12 @@ if (Test-Path -LiteralPath $ExtractDir) {
 New-Item -ItemType Directory -Force -Path $ExtractDir | Out-Null
 Expand-Archive -LiteralPath $ZipPath -DestinationPath $ExtractDir -Force
 
-$SourceDir = Join-Path $ExtractDir 'bench-chef'
+$SourceDir = Join-Path $ExtractDir 'benchchef\app'
 if (-not (Test-Path -LiteralPath (Join-Path $SourceDir 'docker-compose.yml'))) {
-    Write-Error "Release package does not contain bench-chef/docker-compose.yml"
+    $SourceDir = Join-Path $ExtractDir 'bench-chef'
+}
+if (-not (Test-Path -LiteralPath (Join-Path $SourceDir 'docker-compose.yml'))) {
+    Write-Error "Release package does not contain benchchef/app/docker-compose.yml"
     exit 1
 }
 

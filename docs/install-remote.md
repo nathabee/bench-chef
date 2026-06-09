@@ -223,16 +223,30 @@ C:\benchchef\bin\t.ps1
 
 ## First App Install
 
-Download and extract:
+Download:
 
 ```text
 bench-chef-<version>-windows.zip
 ```
 
-Copy the extracted `bench-chef\` content into:
+Extract it into:
+
+```text
+C:\
+```
+
+The archive contains a `benchchef\app\` directory, so extracting it into `C:\`
+creates or updates the app files directly under:
 
 ```text
 C:\benchchef\app\
+```
+
+Do not extract this archive into `C:\benchchef`; otherwise it will create a
+nested path such as:
+
+```text
+C:\benchchef\benchchef\app\
 ```
 
 Start:

@@ -165,7 +165,7 @@ import pathlib
 import zipfile
 
 for source, target, archive_root in [
-    ("package/windows/bench-chef", "dist/${WINDOWS_PACKAGE}", pathlib.Path("bench-chef")),
+    ("package/windows/bench-chef", "dist/${WINDOWS_PACKAGE}", pathlib.Path("benchchef/app")),
     ("package/admin/benchchef", "dist/${ADMIN_PACKAGE}", pathlib.Path("benchchef")),
 ]:
     source_path = pathlib.Path(source)
