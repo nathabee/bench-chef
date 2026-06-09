@@ -88,6 +88,7 @@ Install these once on the Windows host:
 
 ```text
 Docker Desktop
+Python 3
 PowerShell
 OpenSSH Server, if remote administration is wanted
 Git is optional
@@ -97,6 +98,74 @@ BenchChef uses Docker Compose for Prometheus, Grafana, node-exporter, and
 process-exporter. The BenchChef app package contains the Django backend source,
 the built Angular frontend, scripts, dashboards, and documentation. BenchChef
 does not ship a jar.
+
+### Install Docker Desktop
+
+Download Docker Desktop for Windows:
+
+```text
+https://www.docker.com/products/docker-desktop/
+```
+
+Install it with the default options, reboot if requested, and start Docker
+Desktop once after installation.
+
+Verify from PowerShell:
+
+```powershell
+docker --version
+docker compose version
+docker run hello-world
+```
+
+`docker run hello-world` must complete successfully before starting BenchChef.
+
+### Install Python 3
+
+Download Python for Windows:
+
+```text
+https://www.python.org/downloads/windows/
+```
+
+During installation, enable:
+
+```text
+Add python.exe to PATH
+```
+
+Verify from a new PowerShell window:
+
+```powershell
+python --version
+python -m venv --help
+```
+
+BenchChef uses Python to run the Django backend. You do not install Django
+manually; `C:\benchchef\bin\r.ps1` creates a virtual environment and installs
+the Python packages from `C:\benchchef\app\backend-django\requirements.txt`.
+
+Node.js is not required for the Windows release package because the Angular
+frontend is already built and shipped under `C:\benchchef\app\dist`.
+
+### Optional OpenSSH Server
+
+OpenSSH Server is only needed if you want to run the Linux admin helper scripts
+against this Windows host.
+
+Install and enable it from an elevated PowerShell:
+
+```powershell
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+Start-Service sshd
+Set-Service -Name sshd -StartupType Automatic
+```
+
+Allow inbound SSH if Windows Firewall does not already have the rule:
+
+```powershell
+New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" -Enabled True -Direction Inbound -Protocol TCP -Action Allow -LocalPort 22
+```
 
 ## One-Time Windows Bootstrap
 
