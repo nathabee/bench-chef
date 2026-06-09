@@ -169,6 +169,19 @@ New-NetFirewallRule -Name sshd -DisplayName "OpenSSH Server" -Enabled True -Dire
 
 ## One-Time Windows Bootstrap
 
+Open PowerShell. Use an elevated PowerShell window for Docker Desktop setup,
+OpenSSH setup, firewall changes, and scheduled task registration. Normal manual
+starts can usually run in a normal PowerShell window.
+
+The BenchChef PowerShell scripts are not signed. For the current PowerShell
+session, allow local unsigned scripts with:
+
+```powershell
+Set-ExecutionPolicy -Scope Process -ExecutionPolicy Bypass
+```
+
+This affects only the current PowerShell process.
+
 Create directories:
 
 ```powershell
@@ -228,11 +241,21 @@ disposable. Do not edit `C:\benchchef\app\.env` directly because app updates may
 replace the whole `C:\benchchef\app` directory and `r.ps1` regenerates the file
 from `data\run.env`.
 
-Register the scheduled task:
+Optional: register BenchChef to start when the current Windows user logs in.
+
+Run this once after extracting the admin package:
 
 ```powershell
 C:\benchchef\bin\t.ps1
 ```
+
+This creates a Windows Scheduled Task named `BenchChef` that runs:
+
+```text
+C:\benchchef\bin\r.ps1
+```
+
+You can skip this step if you want to start BenchChef manually.
 
 ## First App Install
 

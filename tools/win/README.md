@@ -21,7 +21,7 @@ C:\benchchef\
 ## Scripts
 
 ```text
-t.ps1              create or refresh the BenchChef scheduled task
+t.ps1              create the optional BenchChef login scheduled task
 r.ps1              start BenchChef through Task Scheduler
 s.ps1              stop BenchChef
 u.ps1              update BenchChef from a GitHub release ZIP

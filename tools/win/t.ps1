@@ -17,8 +17,6 @@ powershell -NoProfile -ExecutionPolicy Bypass -File "C:\benchchef\bin\r.ps1" >> 
 "@ | Set-Content -LiteralPath $TaskCmd -Encoding ASCII
 
 $CurrentUser = [System.Security.Principal.WindowsIdentity]::GetCurrent().Name
-$StartTime = (Get-Date).AddMinutes(5).ToString('HH:mm')
-
 cmd.exe /c "schtasks /Query /TN BenchChef >NUL 2>NUL"
 $TaskExists = ($LASTEXITCODE -eq 0)
 
@@ -28,5 +26,5 @@ if ($TaskExists) {
     exit 0
 }
 
-schtasks /Create /F /TN $TaskName /SC ONCE /ST $StartTime /TR $TaskCmd /RU $CurrentUser | Out-Null
+schtasks /Create /F /TN $TaskName /SC ONLOGON /TR $TaskCmd /RU $CurrentUser | Out-Null
 Write-Host "Scheduled task '$TaskName' registered for $CurrentUser."
