@@ -60,6 +60,12 @@ if [ ! -f .venv/.benchchef-requirements-installed ]; then
   touch .venv/.benchchef-requirements-installed
 fi
 
+echo "Applying BenchChef database migrations..."
+python manage.py migrate --noinput
+
+echo "Initializing default SpaghettiChef connection profile..."
+python manage.py init_default_connection
+
 nohup python manage.py runserver \
   0.0.0.0:"$BENCHCHEF_BACKEND_PORT" \
   > backend.log 2>&1 &

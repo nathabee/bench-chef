@@ -153,6 +153,12 @@ if (-not (Test-Path -LiteralPath $requirementsMarker)) {
     New-Item -ItemType File -Force -Path $requirementsMarker | Out-Null
 }
 
+Write-Host "Applying BenchChef database migrations..."
+& $venvPython manage.py migrate --noinput
+
+Write-Host "Initializing default SpaghettiChef connection profile..."
+& $venvPython manage.py init_default_connection
+
 Start-BackgroundProcess `
     -Name 'BenchChef backend' `
     -FilePath $venvPython `

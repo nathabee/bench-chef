@@ -176,7 +176,8 @@ Start:
 ```
 
 On the first start, the script creates `backend-django/.venv`, installs Python
-dependencies, and starts the frontend.
+dependencies, applies Django database migrations, initializes the default
+SpaghettiChef connection profile, and starts the frontend.
 
 In a release package, the frontend is already built and served from:
 
