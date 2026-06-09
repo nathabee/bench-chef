@@ -123,12 +123,6 @@ Extract it into:
 C:\
 ```
 
-Do not extract this archive into `C:\benchchef`; otherwise it will create a
-nested path such as:
-
-```text
-C:\benchchef\benchchef\bin\
-```
 
 The archive contains a `benchchef\` directory, so extracting it into `C:\`
 creates or updates:

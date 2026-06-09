@@ -164,15 +164,15 @@ pipeline {
 import pathlib
 import zipfile
 
-for source, target in [
-    ("package/windows/bench-chef", "dist/${WINDOWS_PACKAGE}"),
-    ("package/admin", "dist/${ADMIN_PACKAGE}"),
+for source, target, archive_root in [
+    ("package/windows/bench-chef", "dist/${WINDOWS_PACKAGE}", pathlib.Path("bench-chef")),
+    ("package/admin/benchchef", "dist/${ADMIN_PACKAGE}", pathlib.Path("benchchef")),
 ]:
     source_path = pathlib.Path(source)
     with zipfile.ZipFile(target, "w", zipfile.ZIP_DEFLATED) as zf:
         for path in source_path.rglob("*"):
             if path.is_file():
-                zf.write(path, path.relative_to(source_path.parent))
+                zf.write(path, archive_root / path.relative_to(source_path))
 PY
 
                     tar -C package -czf "dist/${RELEASE_ARCHIVE}" linux windows admin
