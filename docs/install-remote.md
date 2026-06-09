@@ -31,8 +31,9 @@ The Windows package contains the BenchChef app files.
 The admin package contains:
 
 ```text
-win/      Windows PowerShell scripts
-ops/      Linux admin helper scripts
+win/       Windows PowerShell scripts, copied to C:\benchchef\bin
+data/      runtime configuration example, copied to C:\benchchef\data
+ops/       Linux admin helper scripts
 README.md
 ```
 
@@ -93,9 +94,9 @@ Git is optional
 ```
 
 BenchChef uses Docker Compose for Prometheus, Grafana, node-exporter, and
-process-exporter. The Django and Angular dev processes are still local
-development processes in the current project scripts; future release packaging
-may containerize them.
+process-exporter. The BenchChef app package contains the Django backend source,
+the built Angular frontend, scripts, dashboards, and documentation. BenchChef
+does not ship a jar.
 
 ## One-Time Windows Bootstrap
 
@@ -120,12 +121,13 @@ Copy:
 
 ```text
 admin\win\*  -> C:\benchchef\bin\
+admin\data\run.env.example -> C:\benchchef\data\run.env.example
 ```
 
 Create the runtime config:
 
 ```powershell
-Copy-Item C:\benchchef\bin\run.env.example C:\benchchef\data\run.env
+Copy-Item C:\benchchef\data\run.env.example C:\benchchef\data\run.env
 ```
 
 Review `C:\benchchef\data\run.env` and adjust ports if needed.

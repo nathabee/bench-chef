@@ -14,6 +14,24 @@ envsubst < prometheus/prometheus.yml.template > prometheus/prometheus.yml
 
 SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL:-http://localhost:18080}"
 SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL%/}"
+BENCHCHEF_BACKEND_URL="http://localhost:$BENCHCHEF_BACKEND_PORT"
+BENCHCHEF_FRONTEND_URL="http://localhost:$BENCHCHEF_FRONTEND_PORT"
+PROMETHEUS_URL="http://localhost:$PROMETHEUS_PORT"
+GRAFANA_URL="http://localhost:$GRAFANA_PORT"
+
+write_frontend_config() {
+  local config_file="$1"
+
+  cat > "$config_file" <<EOF
+window.BenchChefConfig = {
+  backendUrl: '$BENCHCHEF_BACKEND_URL',
+  frontendUrl: '$BENCHCHEF_FRONTEND_URL',
+  prometheusUrl: '$PROMETHEUS_URL',
+  grafanaUrl: '$GRAFANA_URL',
+  spaghettiChefUrl: '$SPAGHETTICHEF_BASE_URL',
+};
+EOF
+}
 
 echo "Checking SpaghettiChef at $SPAGHETTICHEF_BASE_URL..."
 
@@ -53,6 +71,7 @@ FRONTEND_DIST_DIR="$ROOT_DIR/dist/frontend-angular/browser"
 FRONTEND_DEV_DIST_DIR="$ROOT_DIR/frontend-angular/dist/frontend-angular/browser"
 
 if [ -f "$FRONTEND_SOURCE_DIR/package.json" ]; then
+  write_frontend_config "$FRONTEND_SOURCE_DIR/public/benchchef-config.js"
   cd "$FRONTEND_SOURCE_DIR"
   if [ ! -d node_modules ]; then
     echo "Installing BenchChef frontend Node dependencies..."
@@ -64,14 +83,16 @@ if [ -f "$FRONTEND_SOURCE_DIR/package.json" ]; then
     --port "$BENCHCHEF_FRONTEND_PORT" \
     > frontend.log 2>&1 &
 elif [ -f "$FRONTEND_DIST_DIR/index.html" ]; then
-  cd "$FRONTEND_DIST_DIR"
-  nohup python3 -m http.server "$BENCHCHEF_FRONTEND_PORT" \
-    --bind 0.0.0.0 \
+  write_frontend_config "$FRONTEND_DIST_DIR/benchchef-config.js"
+  nohup python3 "$ROOT_DIR/scripts/serve_frontend.py" \
+    "$FRONTEND_DIST_DIR" \
+    "$BENCHCHEF_FRONTEND_PORT" \
     > "$ROOT_DIR/frontend.log" 2>&1 &
 elif [ -f "$FRONTEND_DEV_DIST_DIR/index.html" ]; then
-  cd "$FRONTEND_DEV_DIST_DIR"
-  nohup python3 -m http.server "$BENCHCHEF_FRONTEND_PORT" \
-    --bind 0.0.0.0 \
+  write_frontend_config "$FRONTEND_DEV_DIST_DIR/benchchef-config.js"
+  nohup python3 "$ROOT_DIR/scripts/serve_frontend.py" \
+    "$FRONTEND_DEV_DIST_DIR" \
+    "$BENCHCHEF_FRONTEND_PORT" \
     > "$ROOT_DIR/frontend.log" 2>&1 &
 else
   echo "BenchChef frontend was not found." >&2

@@ -10,28 +10,55 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/6.0/ref/settings/
 """
 
+import os
 from pathlib import Path
+from decouple import Config, RepositoryEnv
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
+ROOT_DIR = BASE_DIR.parent
+ENV_FILE = ROOT_DIR / ".env"
+config = Config(RepositoryEnv(str(ENV_FILE))) if ENV_FILE.exists() else Config(os.environ)
 
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/6.0/howto/deployment/checklist/
 
-# SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-^_3ik%4@k8w=3&7(qy346!zj^qdq64i5#_aue#_n(az0j5=6s*'
+SECRET_KEY = config(
+    "BENCHCHEF_SECRET_KEY",
+    default="django-insecure-benchchef-local-dev-change-me",
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+DEBUG = config("BENCHCHEF_DEBUG", default=True, cast=bool)
 
+
+BENCHCHEF_FRONTEND_PORT = config("BENCHCHEF_FRONTEND_PORT", default="18072")
+BENCHCHEF_CORS_ALLOWED_ORIGINS = config(
+    "BENCHCHEF_CORS_ALLOWED_ORIGINS",
+    default=(
+        f"http://localhost:{BENCHCHEF_FRONTEND_PORT},"
+        f"http://127.0.0.1:{BENCHCHEF_FRONTEND_PORT},"
+        "http://localhost:4200"
+    ),
+)
 
 CORS_ALLOWED_ORIGINS = [
-    "http://localhost:18072",
-    "http://localhost:4200",
+    origin.strip()
+    for origin in BENCHCHEF_CORS_ALLOWED_ORIGINS.split(",")
+    if origin.strip()
 ]
 
 CORS_ALLOW_CREDENTIALS = False
+
+SPAGHETTICHEF_BASE_URL = config(
+    "SPAGHETTICHEF_BASE_URL",
+    default="http://localhost:18080",
+)
+SPAGHETTICHEF_ROLE_HEADER = config(
+    "SPAGHETTICHEF_ROLE_HEADER",
+    default="ADMIN",
+)
  
 ALLOWED_HOSTS = [
     '0.0.0.0',

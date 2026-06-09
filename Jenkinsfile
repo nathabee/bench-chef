@@ -153,6 +153,8 @@ pipeline {
 
                     cp -R tools/win package/admin/win
                     cp -R tools/ops package/admin/ops
+                    mkdir -p package/admin/data
+                    cp tools/win/run.env.example package/admin/data/run.env.example
                     cp tools/README.md package/admin/README.md
 
                     tar -C package/linux -czf "dist/${LINUX_PACKAGE}" bench-chef

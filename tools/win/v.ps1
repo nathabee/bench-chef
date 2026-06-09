@@ -4,25 +4,58 @@ $Root = 'C:\benchchef'
 $AppDir = Join-Path $Root 'app'
 $EnvPath = Join-Path $Root 'data\run.env'
 
-$ports = @{
-    Backend = '18071'
-    Frontend = '18072'
-    Prometheus = '18073'
-    Grafana = '18074'
+function Read-RunEnv {
+    param([string]$Path)
+
+    $values = @{}
+    if (Test-Path -LiteralPath $Path) {
+        Get-Content -LiteralPath $Path | ForEach-Object {
+            $line = $_.Trim()
+            if ($line -eq '' -or $line.StartsWith('#')) {
+                return
+            }
+            if ($line -match '^([^=]+)=(.*)$') {
+                $values[$Matches[1].Trim()] = $Matches[2].Trim()
+            }
+        }
+    }
+    return $values
 }
 
-if (Test-Path -LiteralPath $EnvPath) {
-    Get-Content -LiteralPath $EnvPath | ForEach-Object {
-        if ($_ -match '^BENCHCHEF_BACKEND_PORT=(.+)$') { $ports.Backend = $Matches[1].Trim() }
-        if ($_ -match '^BENCHCHEF_FRONTEND_PORT=(.+)$') { $ports.Frontend = $Matches[1].Trim() }
-        if ($_ -match '^PROMETHEUS_PORT=(.+)$') { $ports.Prometheus = $Matches[1].Trim() }
-        if ($_ -match '^GRAFANA_PORT=(.+)$') { $ports.Grafana = $Matches[1].Trim() }
+function EnvValue {
+    param([hashtable]$Values, [string]$Name, [string]$Default)
+
+    if ($Values.ContainsKey($Name) -and $Values[$Name]) {
+        return $Values[$Name]
     }
+    return $Default
+}
+
+$values = Read-RunEnv $EnvPath
+$ports = @{
+    Backend = EnvValue $values 'BENCHCHEF_BACKEND_PORT' '18071'
+    Frontend = EnvValue $values 'BENCHCHEF_FRONTEND_PORT' '18072'
+    Prometheus = EnvValue $values 'PROMETHEUS_PORT' '18073'
+    Grafana = EnvValue $values 'GRAFANA_PORT' '18074'
 }
 
 Write-Host "BenchChef root exists: $(Test-Path -LiteralPath $Root)"
 Write-Host "App dir exists: $(Test-Path -LiteralPath $AppDir)"
 Write-Host "run.env exists: $(Test-Path -LiteralPath $EnvPath)"
+
+Write-Host ""
+Write-Host "--- BenchChef processes ---"
+foreach ($pidFileName in @('benchchef-backend.pid', 'benchchef-frontend.pid')) {
+    $pidPath = Join-Path $Root "data\$pidFileName"
+    if (Test-Path -LiteralPath $pidPath) {
+        $processId = Get-Content -LiteralPath $pidPath
+        $running = Get-Process -Id $processId -ErrorAction SilentlyContinue
+        Write-Host "$pidFileName -> PID $processId running: $($null -ne $running)"
+    }
+    else {
+        Write-Host "$pidFileName -> missing"
+    }
+}
 
 Write-Host ""
 Write-Host "--- Docker Compose ---"

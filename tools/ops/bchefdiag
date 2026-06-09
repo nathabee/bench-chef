@@ -79,7 +79,32 @@ catch {
 
 "`n=== BenchChef port usage ===" | Add-Content -Path $Out
 try {
-    foreach ($Port in @("18071", "18072", "18073", "18074", "18075", "18076")) {
+    $EnvPath = "C:\benchchef\data\run.env"
+    $Ports = @("18071", "18072", "18073", "18074", "18075", "18076")
+
+    if (Test-Path -LiteralPath $EnvPath) {
+        $EnvValues = @{}
+        Get-Content -LiteralPath $EnvPath | ForEach-Object {
+            $Line = $_.Trim()
+            if ($Line -eq "" -or $Line.StartsWith("#")) {
+                return
+            }
+            if ($Line -match "^([^=]+)=(.*)$") {
+                $EnvValues[$Matches[1].Trim()] = $Matches[2].Trim()
+            }
+        }
+
+        $Ports = @(
+            $EnvValues["BENCHCHEF_BACKEND_PORT"],
+            $EnvValues["BENCHCHEF_FRONTEND_PORT"],
+            $EnvValues["PROMETHEUS_PORT"],
+            $EnvValues["GRAFANA_PORT"],
+            $EnvValues["NODE_EXPORTER_PORT"],
+            $EnvValues["PROCESS_EXPORTER_PORT"]
+        ) | Where-Object { $_ }
+    }
+
+    foreach ($Port in $Ports) {
         "--- port $Port ---" | Add-Content -Path $Out
         netstat -ano | Select-String ":$Port" | Out-String | Add-Content -Path $Out
     }

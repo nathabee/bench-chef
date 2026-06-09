@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.core.management.base import BaseCommand
 
 from connections.models import ConnectionProfile
@@ -10,8 +11,8 @@ class Command(BaseCommand):
         profile, created = ConnectionProfile.objects.update_or_create(
             name='Local SpaghettiChef',
             defaults={
-                'base_url': 'http://localhost:18080',
-                'role_header': 'ADMIN',
+                'base_url': settings.SPAGHETTICHEF_BASE_URL,
+                'role_header': settings.SPAGHETTICHEF_ROLE_HEADER,
                 'enabled': True,
                 'health_path': '/health',
                 'version_path': '/version',

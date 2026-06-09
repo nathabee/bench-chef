@@ -11,7 +11,7 @@
     <dl>
       <div>
         <dt>Frontend</dt>
-        <dd><a [href]="frontendUrl" target="_blank" rel="noreferrer">{{ frontendUrl }}</a></dd>
+        <dd><a [href]="backendApi.frontendUrl()" target="_blank" rel="noreferrer">{{ backendApi.frontendUrl() }}</a></dd>
       </div>
       <div>
         <dt>Backend API</dt>
@@ -43,7 +43,7 @@
     <dl>
       <div>
         <dt>SpaghettiChef Local</dt>
-        <dd><a [href]="spaghettiChefUrl" target="_blank" rel="noreferrer">{{ spaghettiChefUrl }}</a></dd>
+        <dd><a [href]="backendApi.spaghettiChefUrl()" target="_blank" rel="noreferrer">{{ backendApi.spaghettiChefUrl() }}</a></dd>
       </div>
       <div>
         <dt>Boundary</dt>

@@ -61,13 +61,21 @@ try {
     }
     Expand-Archive -LiteralPath $AdminZip -DestinationPath $AdminExtractDir -Force
     Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'admin\win\*') -Destination $BinDir -Recurse -Force
+    if (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'admin\data\run.env.example')) {
+        Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'admin\data\run.env.example') -Destination (Join-Path $DataDir 'run.env.example') -Force
+    }
 }
 catch {
     Write-Warning "Could not download admin package: $($_.Exception.Message)"
 }
 
 if (-not (Test-Path -LiteralPath (Join-Path $DataDir 'run.env'))) {
-    Copy-Item -LiteralPath (Join-Path $BinDir 'run.env.example') -Destination (Join-Path $DataDir 'run.env') -Force
+    if (Test-Path -LiteralPath (Join-Path $DataDir 'run.env.example')) {
+        Copy-Item -LiteralPath (Join-Path $DataDir 'run.env.example') -Destination (Join-Path $DataDir 'run.env') -Force
+    }
+    else {
+        Copy-Item -LiteralPath (Join-Path $BinDir 'run.env.example') -Destination (Join-Path $DataDir 'run.env') -Force
+    }
 }
 
 & (Join-Path $BinDir 'r.ps1')

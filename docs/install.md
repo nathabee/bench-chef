@@ -51,6 +51,7 @@ BenchChef uses values from:
 Typical ports:
 
 ```text
+BENCHCHEF_SECRET_KEY
 BENCHCHEF_BACKEND_PORT
 BENCHCHEF_FRONTEND_PORT
 PROMETHEUS_PORT
@@ -157,12 +158,16 @@ cp .env.example .env
 Review `.env`, especially:
 
 ```text
+BENCHCHEF_SECRET_KEY
 SPAGHETTICHEF_BASE_URL
 BENCHCHEF_BACKEND_PORT
 BENCHCHEF_FRONTEND_PORT
 PROMETHEUS_PORT
 GRAFANA_PORT
 ```
+
+Change `BENCHCHEF_SECRET_KEY` for any persistent install. The value in
+`.env.example` is only a local development placeholder.
 
 Start:
 
