@@ -28,7 +28,20 @@ cd "$ROOT_DIR"
 docker compose up -d
 
 cd "$ROOT_DIR/backend-django"
+if [ ! -d .venv ]; then
+  echo "Creating BenchChef backend Python virtual environment..."
+  python3 -m venv .venv
+fi
+
 source .venv/bin/activate
+
+if [ ! -f .venv/.benchchef-requirements-installed ]; then
+  echo "Installing BenchChef backend Python dependencies..."
+  pip install --upgrade pip
+  pip install -r requirements.txt
+  touch .venv/.benchchef-requirements-installed
+fi
+
 nohup python manage.py runserver \
   0.0.0.0:"$BENCHCHEF_BACKEND_PORT" \
   > backend.log 2>&1 &
@@ -36,7 +49,12 @@ nohup python manage.py runserver \
 echo $! > /tmp/benchchef-backend.pid
 
 cd "$ROOT_DIR/frontend-angular"
-nohup ng serve \
+if [ ! -d node_modules ]; then
+  echo "Installing BenchChef frontend Node dependencies..."
+  npm install
+fi
+
+nohup npx ng serve \
   --host 0.0.0.0 \
   --port "$BENCHCHEF_FRONTEND_PORT" \
   > frontend.log 2>&1 &

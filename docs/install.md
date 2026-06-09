@@ -135,6 +135,7 @@ Requirements:
 Docker
 Docker Compose
 Python 3
+python3-venv
 Node.js and npm
 SpaghettiChef installed separately
 ```
@@ -168,6 +169,11 @@ Start:
 ```bash
 ./scripts/start.sh
 ```
+
+On the first start, the script creates `backend-django/.venv`, installs Python
+dependencies, and installs frontend Node dependencies if `node_modules` is
+missing. This first run can take longer and needs access to the Python and npm
+package repositories.
 
 Verify:
 
