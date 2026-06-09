@@ -3,11 +3,6 @@ pipeline {
 
     parameters {
         string(
-            name: 'GIT_BRANCH',
-            defaultValue: 'develop',
-            description: 'Git branch to build, for example develop or main.'
-        )
-        string(
             name: 'PYTHON_BIN',
             defaultValue: 'python3',
             description: 'Python executable used for Django checks and packaging. '
@@ -45,18 +40,6 @@ pipeline {
     }
 
     stages {
-        stage('Checkout') {
-            steps {
-                checkout([
-                    $class: 'GitSCM',
-                    branches: [[name: "*/${params.GIT_BRANCH}"]],
-                    userRemoteConfigs: [[
-                        url: 'https://github.com/nathabee/bench-chef.git'
-                    ]]
-                ])
-            }
-        }
-
         stage('Environment') {
             steps {
                 script {

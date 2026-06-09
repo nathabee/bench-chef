@@ -45,7 +45,7 @@ Status: DONE
 Work:
 
 * replace copied SpaghettiChef Jenkins behavior with a BenchChef pipeline
-* allow branch selection
+* use the Jenkins job checkout as the source tree
 * allow Python executable selection
 * allow optional Node home override
 * allow optional release version override
@@ -57,7 +57,7 @@ Work:
 Acceptance:
 
 ```text
-Jenkins can build BenchChef from a selected branch
+Jenkins can build BenchChef from the branch selected by the Jenkins job
 Jenkins can create local release artifacts
 Jenkins can publish those artifacts to GitHub Releases when enabled
 ```
@@ -171,7 +171,7 @@ no benchmark scenario runner implementation in 0.10.x
 version check passes
 backend tests pass
 frontend build passes
-JenkinsFile packages BenchChef release assets
+Jenkinsfile packages BenchChef release assets
 Windows admin tools are BenchChef-specific
 remote install documentation exists
 README implementation status is aligned with TODO files
