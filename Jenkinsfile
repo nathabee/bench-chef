@@ -10,7 +10,7 @@ pipeline {
         string(
             name: 'PYTHON_BIN',
             defaultValue: 'python3',
-            description: 'Python executable used for Django checks and packaging.'
+            description: 'Python executable used for Django checks and packaging. '
         )
         string(
             name: 'NODE_HOME_OVERRIDE',
