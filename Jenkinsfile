@@ -151,11 +151,12 @@ pipeline {
                     copy_runtime package/linux/bench-chef
                     copy_runtime package/windows/bench-chef
 
-                    cp -R tools/win package/admin/win
-                    cp -R tools/ops package/admin/ops
-                    mkdir -p package/admin/data
-                    cp tools/win/run.env.example package/admin/data/run.env.example
-                    cp tools/README.md package/admin/README.md
+                    mkdir -p package/admin/benchchef/bin package/admin/benchchef/data package/admin/benchchef/ops
+                    cp tools/win/*.ps1 package/admin/benchchef/bin/
+                    cp tools/win/README.md package/admin/benchchef/bin/README.md
+                    cp tools/win/run.env.example package/admin/benchchef/data/run.env.example
+                    cp -R tools/ops/. package/admin/benchchef/ops/
+                    cp tools/README.md package/admin/benchchef/README.md
 
                     tar -C package/linux -czf "dist/${LINUX_PACKAGE}" bench-chef
 

@@ -31,10 +31,10 @@ The Windows package contains the BenchChef app files.
 The admin package contains:
 
 ```text
-win/       Windows PowerShell scripts, copied to C:\benchchef\bin
-data/      runtime configuration example, copied to C:\benchchef\data
-ops/       Linux admin helper scripts
-README.md
+benchchef/bin/       Windows PowerShell scripts
+benchchef/data/      runtime configuration example
+benchchef/ops/       Linux admin helper scripts
+benchchef/README.md
 ```
 
 ## GitHub Release Publishing
@@ -111,23 +111,43 @@ New-Item -ItemType Directory -Force -Path C:\benchchef\rel
 New-Item -ItemType Directory -Force -Path C:\benchchef\tmp
 ```
 
-Download and extract the admin package:
+Download the admin package:
 
 ```text
 bench-chef-<version>-admin.zip
 ```
 
-Copy:
+Extract it into:
 
 ```text
-admin\win\*  -> C:\benchchef\bin\
-admin\data\run.env.example -> C:\benchchef\data\run.env.example
+C:\
 ```
 
-Create the runtime config:
+Do not extract this archive into `C:\benchchef`; otherwise it will create a
+nested path such as:
+
+```text
+C:\benchchef\benchchef\bin\
+```
+
+The archive contains a `benchchef\` directory, so extracting it into `C:\`
+creates or updates:
+
+```text
+C:\benchchef\bin\
+C:\benchchef\data\run.env.example
+C:\benchchef\ops\
+```
+
+It does not contain `C:\benchchef\data\run.env`, so an existing runtime
+configuration is not overwritten.
+
+Create the runtime config only if it does not already exist:
 
 ```powershell
-Copy-Item C:\benchchef\data\run.env.example C:\benchchef\data\run.env
+if (-not (Test-Path C:\benchchef\data\run.env)) {
+    Copy-Item C:\benchchef\data\run.env.example C:\benchchef\data\run.env
+}
 ```
 
 Review `C:\benchchef\data\run.env` and adjust ports if needed.

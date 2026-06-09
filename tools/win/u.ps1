@@ -60,8 +60,17 @@ try {
         Remove-Item -LiteralPath $AdminExtractDir -Recurse -Force
     }
     Expand-Archive -LiteralPath $AdminZip -DestinationPath $AdminExtractDir -Force
-    Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'admin\win\*') -Destination $BinDir -Recurse -Force
-    if (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'admin\data\run.env.example')) {
+    if (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'benchchef\bin')) {
+        Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'benchchef\bin\*') -Destination $BinDir -Recurse -Force
+    }
+    elseif (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'admin\win')) {
+        Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'admin\win\*') -Destination $BinDir -Recurse -Force
+    }
+
+    if (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'benchchef\data\run.env.example')) {
+        Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'benchchef\data\run.env.example') -Destination (Join-Path $DataDir 'run.env.example') -Force
+    }
+    elseif (Test-Path -LiteralPath (Join-Path $AdminExtractDir 'admin\data\run.env.example')) {
         Copy-Item -LiteralPath (Join-Path $AdminExtractDir 'admin\data\run.env.example') -Destination (Join-Path $DataDir 'run.env.example') -Force
     }
 }
@@ -73,7 +82,7 @@ if (-not (Test-Path -LiteralPath (Join-Path $DataDir 'run.env'))) {
     if (Test-Path -LiteralPath (Join-Path $DataDir 'run.env.example')) {
         Copy-Item -LiteralPath (Join-Path $DataDir 'run.env.example') -Destination (Join-Path $DataDir 'run.env') -Force
     }
-    else {
+    elseif (Test-Path -LiteralPath (Join-Path $BinDir 'run.env.example')) {
         Copy-Item -LiteralPath (Join-Path $BinDir 'run.env.example') -Destination (Join-Path $DataDir 'run.env') -Force
     }
 }
