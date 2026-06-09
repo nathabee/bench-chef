@@ -3,6 +3,11 @@ pipeline {
 
     parameters {
         string(
+            name: 'GIT_BRANCH',
+            defaultValue: 'main',
+            description: 'Git branch to build. Use main for normal release tests.'
+        )
+        string(
             name: 'PYTHON_BIN',
             defaultValue: 'python3',
             description: 'Python executable used for Django checks and packaging. '
@@ -40,6 +45,18 @@ pipeline {
     }
 
     stages {
+        stage('Checkout Selected Branch') {
+            steps {
+                checkout([
+                    $class: 'GitSCM',
+                    branches: [[name: "*/${params.GIT_BRANCH ?: 'main'}"]],
+                    userRemoteConfigs: [[
+                        url: 'https://github.com/nathabee/bench-chef.git'
+                    ]]
+                ])
+            }
+        }
+
         stage('Environment') {
             steps {
                 script {
@@ -67,8 +84,9 @@ pipeline {
             steps {
                 sh '''
                     set -eu
-                    if [ -n "${RELEASE_VERSION}" ]; then
-                      printf '%s\n' "${RELEASE_VERSION}" > VERSION
+                    RELEASE_VERSION_VALUE="${RELEASE_VERSION:-}"
+                    if [ -n "${RELEASE_VERSION_VALUE}" ]; then
+                      printf '%s\n' "${RELEASE_VERSION_VALUE}" > VERSION
                       tools/sync-version.sh
                     else
                       tools/check-version.sh
@@ -180,7 +198,8 @@ PY
                     set -eu
                     VERSION_VALUE="$(cat .jenkins-version)"
                     TAG_NAME="v${VERSION_VALUE}"
-                    TITLE="${RELEASE_NAME:-BenchChef ${VERSION_VALUE}}"
+                    RELEASE_NAME_VALUE="${RELEASE_NAME:-}"
+                    TITLE="${RELEASE_NAME_VALUE:-BenchChef ${VERSION_VALUE}}"
 
                     gh release create "${TAG_NAME}" \
                       dist/* \

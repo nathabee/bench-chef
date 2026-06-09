@@ -45,7 +45,7 @@ Status: DONE
 Work:
 
 * replace copied SpaghettiChef Jenkins behavior with a BenchChef pipeline
-* use the Jenkins job checkout as the source tree
+* allow branch selection with `main` as the default
 * allow Python executable selection
 * allow optional Node home override
 * allow optional release version override
@@ -57,7 +57,7 @@ Work:
 Acceptance:
 
 ```text
-Jenkins can build BenchChef from the branch selected by the Jenkins job
+Jenkins can build BenchChef from the selected branch
 Jenkins can create local release artifacts
 Jenkins can publish those artifacts to GitHub Releases when enabled
 ```
