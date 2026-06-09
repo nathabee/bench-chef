@@ -1,5 +1,8 @@
 #!/usr/bin/env bash
 
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
+
 check_pid() {
     local name=$1
     local file=$2

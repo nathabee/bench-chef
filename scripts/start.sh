@@ -1,7 +1,8 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-cd ~/coding/github/bench-chef
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+cd "$ROOT_DIR"
 
 set -a
 source .env
@@ -20,10 +21,10 @@ nohup mvn \
 
 echo $! > /tmp/spaghettichef.pid
 
-cd ~/coding/github/bench-chef
+cd "$ROOT_DIR"
 docker compose up -d
 
-cd ~/coding/github/bench-chef/backend-django
+cd "$ROOT_DIR/backend-django"
 source .venv/bin/activate
 nohup python manage.py runserver \
   0.0.0.0:"$BENCHCHEF_BACKEND_PORT" \
@@ -31,7 +32,7 @@ nohup python manage.py runserver \
 
 echo $! > /tmp/benchchef-backend.pid
 
-cd ~/coding/github/bench-chef/frontend-angular
+cd "$ROOT_DIR/frontend-angular"
 nohup ng serve \
   --host 0.0.0.0 \
   --port "$BENCHCHEF_FRONTEND_PORT" \

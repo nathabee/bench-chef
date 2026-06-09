@@ -2,6 +2,8 @@
 
 set +e
 
+ROOT_DIR="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
+
 echo "Stopping Angular..."
 
 if [ -f /tmp/benchchef-frontend.pid ]; then
@@ -25,7 +27,7 @@ fi
 
 echo "Stopping Docker containers..."
 
-cd ~/coding/github/bench-chef
+cd "$ROOT_DIR"
 docker compose down
 
 echo "Done."
