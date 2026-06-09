@@ -23,7 +23,7 @@ ps -ef | grep -v grep | grep "manage.py runserver" || echo "Not running"
 
 echo
 echo "=== BenchChef Angular ==="
-ps -ef | grep -v grep | grep "ng serve" || echo "Not running"
+ps -ef | grep -v grep | grep -E "ng serve|http.server ${BENCHCHEF_FRONTEND_PORT}" || echo "Not running"
 
 echo
 echo "=== Listening Ports ==="

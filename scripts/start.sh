@@ -48,16 +48,36 @@ nohup python manage.py runserver \
 
 echo $! > /tmp/benchchef-backend.pid
 
-cd "$ROOT_DIR/frontend-angular"
-if [ ! -d node_modules ]; then
-  echo "Installing BenchChef frontend Node dependencies..."
-  npm install
-fi
+FRONTEND_SOURCE_DIR="$ROOT_DIR/frontend-angular"
+FRONTEND_DIST_DIR="$ROOT_DIR/dist/frontend-angular/browser"
+FRONTEND_DEV_DIST_DIR="$ROOT_DIR/frontend-angular/dist/frontend-angular/browser"
 
-nohup npx ng serve \
-  --host 0.0.0.0 \
-  --port "$BENCHCHEF_FRONTEND_PORT" \
-  > frontend.log 2>&1 &
+if [ -f "$FRONTEND_SOURCE_DIR/package.json" ]; then
+  cd "$FRONTEND_SOURCE_DIR"
+  if [ ! -d node_modules ]; then
+    echo "Installing BenchChef frontend Node dependencies..."
+    npm install
+  fi
+
+  nohup npx ng serve \
+    --host 0.0.0.0 \
+    --port "$BENCHCHEF_FRONTEND_PORT" \
+    > frontend.log 2>&1 &
+elif [ -f "$FRONTEND_DIST_DIR/index.html" ]; then
+  cd "$FRONTEND_DIST_DIR"
+  nohup python3 -m http.server "$BENCHCHEF_FRONTEND_PORT" \
+    --bind 0.0.0.0 \
+    > "$ROOT_DIR/frontend.log" 2>&1 &
+elif [ -f "$FRONTEND_DEV_DIST_DIR/index.html" ]; then
+  cd "$FRONTEND_DEV_DIST_DIR"
+  nohup python3 -m http.server "$BENCHCHEF_FRONTEND_PORT" \
+    --bind 0.0.0.0 \
+    > "$ROOT_DIR/frontend.log" 2>&1 &
+else
+  echo "BenchChef frontend was not found." >&2
+  echo "Expected either $FRONTEND_SOURCE_DIR/package.json or $FRONTEND_DIST_DIR/index.html." >&2
+  exit 1
+fi
 
 echo $! > /tmp/benchchef-frontend.pid
 

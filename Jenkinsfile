@@ -22,11 +22,6 @@ pipeline {
             defaultValue: '',
             description: 'Optional release version, for example 0.10.0. Leave empty to use VERSION.'
         )
-        string(
-            name: 'RELEASE_NAME',
-            defaultValue: '',
-            description: 'Optional GitHub release title. Leave empty for BenchChef <version>.'
-        )
         booleanParam(
             name: 'PUBLISH_GITHUB_RELEASE',
             defaultValue: false,
@@ -200,8 +195,7 @@ PY
 
                         VERSION_VALUE="$(cat .jenkins-version)"
                         TAG_NAME="v${VERSION_VALUE}"
-                        RELEASE_NAME_VALUE="${RELEASE_NAME:-}"
-                        TITLE="${RELEASE_NAME_VALUE:-BenchChef ${VERSION_VALUE}}"
+                        TITLE="${VERSION_VALUE}"
 
                         API_JSON=$(mktemp)
                         cat > "${API_JSON}" <<EOF

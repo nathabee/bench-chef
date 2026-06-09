@@ -171,9 +171,18 @@ Start:
 ```
 
 On the first start, the script creates `backend-django/.venv`, installs Python
-dependencies, and installs frontend Node dependencies if `node_modules` is
-missing. This first run can take longer and needs access to the Python and npm
-package repositories.
+dependencies, and starts the frontend.
+
+In a release package, the frontend is already built and served from:
+
+```text
+dist/frontend-angular/browser
+```
+
+In a development checkout, the script uses `frontend-angular/` and installs
+Node dependencies if `node_modules` is missing. A first development start can
+therefore take longer and needs access to the Python and npm package
+repositories.
 
 Verify:
 
