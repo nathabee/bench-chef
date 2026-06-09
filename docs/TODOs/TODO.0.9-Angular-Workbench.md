@@ -3,7 +3,7 @@
 ## Status
 
 ```text
-IN PROGRESS
+IN PROGRESS - DEVELOPPED - IN TEST
 ```
 
 ## Purpose
