@@ -12,14 +12,17 @@ set +a
 
 envsubst < prometheus/prometheus.yml.template > prometheus/prometheus.yml
 
-cd "$SPAGHETTICHEF_DIR"
-nohup mvn \
-  -Dexec.mainClass="spaghettichef.Main" \
-  -Dspaghettichef.databaseFile=spaghettichef-local.db \
-  -Dspaghettichef.api.port="$PORTSPAGHETTICHEF" \
-  exec:java > spaghettichef.log 2>&1 &
+SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL:-http://localhost:18080}"
+SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL%/}"
 
-echo $! > /tmp/spaghettichef.pid
+echo "Checking SpaghettiChef at $SPAGHETTICHEF_BASE_URL..."
+
+if curl -fsS "$SPAGHETTICHEF_BASE_URL/health" >/dev/null 2>&1; then
+  echo "SpaghettiChef is reachable."
+else
+  echo "SpaghettiChef is not available at $SPAGHETTICHEF_BASE_URL."
+  echo "BenchChef will start, but probes will fail until SpaghettiChef is running."
+fi
 
 cd "$ROOT_DIR"
 docker compose up -d

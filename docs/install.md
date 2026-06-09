@@ -57,21 +57,19 @@ PROMETHEUS_PORT
 GRAFANA_PORT
 NODE_EXPORTER_PORT
 PROCESS_EXPORTER_PORT
-PORTSPAGHETTICHEF
-SPAGHETTICHEF_DIR
+SPAGHETTICHEF_BASE_URL
 ```
 
-`SPAGHETTICHEF_DIR` points to a local SpaghettiChef checkout. BenchChef and
-SpaghettiChef are expected to live next to each other by default:
+`SPAGHETTICHEF_BASE_URL` points to the SpaghettiChef runtime that BenchChef
+should observe:
 
 ```text
-github/
-├── bench-chef/
-└── spaghetti-chef/
+SPAGHETTICHEF_BASE_URL=http://localhost:18080
 ```
 
-SpaghettiChef is not started through BenchChef Docker Compose. The start script
-runs it from the sibling checkout with Maven.
+BenchChef does not start SpaghettiChef. The start script checks the configured
+URL and warns if SpaghettiChef is unavailable; BenchChef still starts so probes
+can be launched after SpaghettiChef comes online.
 
 ### Start
 
@@ -82,7 +80,6 @@ runs it from the sibling checkout with Maven.
 This starts:
 
 ```text
-SpaghettiChef
 BenchChef Django Backend
 BenchChef Angular Frontend
 Prometheus
@@ -159,8 +156,7 @@ cp .env.example .env
 Review `.env`, especially:
 
 ```text
-SPAGHETTICHEF_DIR
-PORTSPAGHETTICHEF
+SPAGHETTICHEF_BASE_URL
 BENCHCHEF_BACKEND_PORT
 BENCHCHEF_FRONTEND_PORT
 PROMETHEUS_PORT

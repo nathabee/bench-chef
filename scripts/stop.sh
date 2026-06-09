@@ -18,13 +18,6 @@ if [ -f /tmp/benchchef-backend.pid ]; then
     rm -f /tmp/benchchef-backend.pid
 fi
 
-echo "Stopping SpaghettiChef..."
-
-if [ -f /tmp/spaghettichef.pid ]; then
-    kill "$(cat /tmp/spaghettichef.pid)"
-    rm -f /tmp/spaghettichef.pid
-fi
-
 echo "Stopping Docker containers..."
 
 cd "$ROOT_DIR"

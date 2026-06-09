@@ -122,17 +122,15 @@ Detailed roadmap: [docs/roadmap.md](docs/roadmap.md).
 
 BenchChef can be started with helper scripts.
 Create a ".env" file (use .env.example), modify ports if necessary :
-By default, BenchChef expects SpaghettiChef as a sibling checkout:
+By default, BenchChef expects SpaghettiChef to already be reachable at:
 
 ```text
-github/
-├── bench-chef/
-└── spaghetti-chef/
+SPAGHETTICHEF_BASE_URL=http://localhost:18080
 ```
 
-`SPAGHETTICHEF_DIR` in `.env` points to that local SpaghettiChef checkout.
-SpaghettiChef is not run by BenchChef Docker Compose; the start script runs it
-with Maven from the sibling project.
+BenchChef does not start SpaghettiChef. The start script checks the configured
+URL and warns if SpaghettiChef is unavailable; BenchChef still starts so probes
+can be launched after SpaghettiChef comes online.
 
 Start the local stack:
 
@@ -143,7 +141,6 @@ Start the local stack:
 This starts:
 
 ```text
-SpaghettiChef runtime
 BenchChef Django backend
 BenchChef Angular frontend
 Prometheus

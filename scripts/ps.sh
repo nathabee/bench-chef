@@ -9,7 +9,13 @@ set +a
 
 echo
 echo "=== SpaghettiChef ==="
-ps -ef | grep -v grep | grep "spaghettichef.Main" || echo "Not running"
+SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL:-http://localhost:18080}"
+SPAGHETTICHEF_BASE_URL="${SPAGHETTICHEF_BASE_URL%/}"
+if curl -fsS "$SPAGHETTICHEF_BASE_URL/health" >/dev/null 2>&1; then
+  echo "Reachable at $SPAGHETTICHEF_BASE_URL"
+else
+  echo "Not reachable at $SPAGHETTICHEF_BASE_URL"
+fi
 
 echo
 echo "=== BenchChef Django ==="
@@ -21,7 +27,7 @@ ps -ef | grep -v grep | grep "ng serve" || echo "Not running"
 
 echo
 echo "=== Listening Ports ==="
-ss -ltnp | grep -E ":${PORTSPAGHETTICHEF}|:${BENCHCHEF_BACKEND_PORT}|:${BENCHCHEF_FRONTEND_PORT}|:${PROMETHEUS_PORT}|:${GRAFANA_PORT}|:${NODE_EXPORTER_PORT}|:${PROCESS_EXPORTER_PORT}" || echo "No matching ports"
+ss -ltnp | grep -E ":${BENCHCHEF_BACKEND_PORT}|:${BENCHCHEF_FRONTEND_PORT}|:${PROMETHEUS_PORT}|:${GRAFANA_PORT}|:${NODE_EXPORTER_PORT}|:${PROCESS_EXPORTER_PORT}" || echo "No matching ports"
 
 echo
 echo "=== Docker Containers ==="

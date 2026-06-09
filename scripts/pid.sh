@@ -21,7 +21,6 @@ check_pid() {
 
 echo "=== Processes ==="
 
-check_pid "SpaghettiChef" "/tmp/spaghettichef.pid"
 check_pid "BenchChef Backend" "/tmp/benchchef-backend.pid"
 check_pid "BenchChef Frontend" "/tmp/benchchef-frontend.pid"
 
