@@ -33,6 +33,28 @@ window.BenchChefConfig = {
 EOF
 }
 
+stop_pid_file() {
+  local label="$1"
+  local pid_file="$2"
+
+  if [ -f "$pid_file" ]; then
+    local pid
+    pid="$(cat "$pid_file")"
+    if [ -n "$pid" ] && ps -p "$pid" >/dev/null 2>&1; then
+      echo "Stopping existing $label process with PID $pid..."
+      kill "$pid" >/dev/null 2>&1 || true
+      sleep 1
+      if ps -p "$pid" >/dev/null 2>&1; then
+        kill -9 "$pid" >/dev/null 2>&1 || true
+      fi
+    fi
+    rm -f "$pid_file"
+  fi
+}
+
+stop_pid_file "BenchChef frontend" /tmp/benchchef-frontend.pid
+stop_pid_file "BenchChef backend" /tmp/benchchef-backend.pid
+
 echo "Checking SpaghettiChef at $SPAGHETTICHEF_BASE_URL..."
 
 if curl -fsS "$SPAGHETTICHEF_BASE_URL/health" >/dev/null 2>&1; then
@@ -115,6 +137,22 @@ until curl -fsS "http://localhost:$BENCHCHEF_BACKEND_PORT/" >/dev/null 2>&1; do
 done
 
 echo "BenchChef backend is reachable."
+
+echo "Waiting for BenchChef frontend on port $BENCHCHEF_FRONTEND_PORT..."
+
+for _ in $(seq 1 30); do
+  if curl -fsS "http://localhost:$BENCHCHEF_FRONTEND_PORT/" >/dev/null 2>&1; then
+    echo "BenchChef frontend is reachable."
+    break
+  fi
+  sleep 1
+done
+
+if ! curl -fsS "http://localhost:$BENCHCHEF_FRONTEND_PORT/" >/dev/null 2>&1; then
+  echo "BenchChef frontend did not become reachable on port $BENCHCHEF_FRONTEND_PORT." >&2
+  echo "Check $ROOT_DIR/frontend.log." >&2
+  exit 1
+fi
 
 if [ "${BENCHCHEF_START_DIAGNOSTICS_LOOP:-false}" != "true" ]; then
   echo "Diagnostics loop disabled."
