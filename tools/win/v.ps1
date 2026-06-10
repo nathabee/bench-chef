@@ -71,11 +71,13 @@ Write-Host ""
 Write-Host "--- HTTP checks ---"
 foreach ($name in $ports.Keys) {
     $port = $ports[$name]
+    $checkUrl = "http://127.0.0.1:$port/"
+    $displayUrl = "http://localhost:$port"
     try {
-        $resp = Invoke-WebRequest -Uri "http://localhost:$port/" -UseBasicParsing -TimeoutSec 3
-        Write-Host "$name http://localhost:$port -> HTTP $($resp.StatusCode)"
+        $resp = Invoke-WebRequest -Uri $checkUrl -UseBasicParsing -TimeoutSec 3
+        Write-Host "$name $displayUrl -> HTTP $($resp.StatusCode)"
     }
     catch {
-        Write-Host "$name http://localhost:$port -> not reachable"
+        Write-Host "$name $displayUrl -> not reachable"
     }
 }

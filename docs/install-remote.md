@@ -37,6 +37,15 @@ benchchef/ops/       Linux admin helper scripts
 benchchef/README.md
 ```
 
+Extract both Windows packages into:
+
+```text
+C:\
+```
+
+Do not extract either package into `C:\benchchef`. The archives already contain
+the `benchchef\...` directory structure.
+
 ## GitHub Release Publishing
 
 The Jenkins pipeline can publish these assets when:

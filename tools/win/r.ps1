@@ -173,6 +173,7 @@ if (-not (Test-Path -LiteralPath $EnvPath)) {
 $values = Read-RunEnv $EnvPath
 $backendPort = EnvValue $values 'BENCHCHEF_BACKEND_PORT' '18071'
 $frontendPort = EnvValue $values 'BENCHCHEF_FRONTEND_PORT' '18072'
+$backendCheckUrl = "http://127.0.0.1:$backendPort/metrics"
 $spaghettiChefUrl = (EnvValue $values 'SPAGHETTICHEF_BASE_URL' 'http://localhost:18080').TrimEnd('/')
 
 Stop-PidFile (Join-Path $DataDir 'benchchef-backend.pid')
@@ -246,10 +247,10 @@ Start-BackgroundProcess `
     -PidPath (Join-Path $DataDir 'benchchef-frontend.pid')
 
 $healthy = $false
-for ($i = 0; $i -lt 30; $i++) {
+for ($i = 0; $i -lt 90; $i++) {
     Start-Sleep -Seconds 1
     try {
-        $resp = Invoke-WebRequest -Uri "http://localhost:$backendPort/metrics" -UseBasicParsing -TimeoutSec 2
+        $resp = Invoke-WebRequest -Uri $backendCheckUrl -UseBasicParsing -TimeoutSec 2
         if ($resp.StatusCode -eq 200) {
             $healthy = $true
             break
@@ -260,7 +261,22 @@ for ($i = 0; $i -lt 30; $i++) {
 }
 
 if (-not $healthy) {
-    Write-Error "BenchChef backend did not become reachable on port $backendPort"
+    $backendLog = Join-Path $LogDir 'backend.log'
+    $backendErrorLog = Join-Path $LogDir 'backend.log.err'
+
+    if (Test-Path -LiteralPath $backendErrorLog) {
+        Write-Host ""
+        Write-Host "Last backend error log lines:"
+        Get-Content -LiteralPath $backendErrorLog -Tail 80 -ErrorAction SilentlyContinue
+    }
+
+    if (Test-Path -LiteralPath $backendLog) {
+        Write-Host ""
+        Write-Host "Last backend log lines:"
+        Get-Content -LiteralPath $backendLog -Tail 80 -ErrorAction SilentlyContinue
+    }
+
+    Write-Error "BenchChef backend did not become reachable at $backendCheckUrl"
     exit 1
 }
 

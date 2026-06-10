@@ -117,6 +117,7 @@ BenchChef
 | 3.1.x   | PLANNED     | [Android support client](docs/TODOs/TODO.3.1-Android-Support-Client.md) |
 
 Detailed roadmap: [docs/roadmap.md](docs/roadmap.md).
+Architecture diagrams: [docs/architecture.md](docs/architecture.md).
 
 ## Local Development
 
