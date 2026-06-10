@@ -146,13 +146,13 @@ Work:
 
 * update README implementation status
 * update TODO index
-* keep 0.11 as the benchmark scenario runner line
+* keep the next planned version lines aligned with the TODO index
 
 Acceptance:
 
 ```text
 README and docs/TODOs/README.md agree that 0.10.x is release packaging
-README and docs/TODOs/README.md agree that 0.11.x is benchmark scenario runner
+README and docs/TODOs/README.md agree on the planned 0.11.x and 0.12.x lines
 ```
 
 ## Non-Goals

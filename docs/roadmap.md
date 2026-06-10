@@ -33,6 +33,26 @@ BenchChef Local
   supports local Grafana dashboards
 ```
 
+## Local Stabilization Before Central
+
+Before the central architecture work, BenchChef Local should make system
+metrics consistent across supported local installs.
+
+The current Linux-oriented system metrics use:
+
+```text
+node_exporter
+process-exporter
+```
+
+Windows release installs currently start Prometheus and Grafana, but do not
+start those Linux exporters. Windows host/process metrics should therefore be
+added through a Windows-native exporter path before relying on system panels
+for Windows farms.
+
+Detailed planning lives in
+[TODO.0.11-Windows-System-Metrics.md](TODOs/TODO.0.11-Windows-System-Metrics.md).
+
 ## Next Major Goal
 
 The next architecture goal is to support a central BenchChef deployment on a

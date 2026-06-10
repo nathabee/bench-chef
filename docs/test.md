@@ -18,12 +18,20 @@ Open:
 http://localhost:18073/targets
 ```
 
-Expected:
+Expected on Linux local installs:
 
 ```text
 benchchef-backend UP
 node-exporter     UP
 process-exporter  UP
+```
+
+Expected on Windows release installs before 0.11 Windows system metrics:
+
+```text
+benchchef-backend UP
+node-exporter     not used
+process-exporter  not used
 ```
 
 ## Generate Probe Data

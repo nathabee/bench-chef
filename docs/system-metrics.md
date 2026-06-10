@@ -20,6 +20,14 @@ BenchChef exporter  probe, benchmark, availability, and latency metrics
 
 cAdvisor remains optional for a later container-focused deployment.
 
+The current external exporter setup is Linux-oriented. Windows release installs
+do not start `node_exporter` or `process-exporter`, so Linux host/process
+panels may be empty on Windows.
+
+Windows host metrics are planned separately in
+[TODO.0.11-Windows-System-Metrics.md](TODOs/TODO.0.11-Windows-System-Metrics.md).
+The expected direction is a Windows-native exporter such as `windows_exporter`.
+
 ## Local Stack
 
 Start BenchChef:
@@ -36,6 +44,17 @@ Grafana
 node-exporter
 process-exporter
 ```
+
+On Windows release installs, the PowerShell start script currently starts:
+
+```text
+Prometheus
+Grafana
+BenchChef Django backend
+BenchChef Angular frontend
+```
+
+It does not start `node_exporter` or `process-exporter`.
 
 Default local URLs:
 
@@ -81,6 +100,9 @@ Expected:
 node-exporter      UP
 process-exporter   UP
 ```
+
+On Windows release installs, expect only the BenchChef backend scrape target to
+have BenchChef data until Windows system metrics are implemented.
 
 SpaghettiChef is not scraped as a Prometheus target. BenchChef observes
 SpaghettiChef through REST/JSON probes, and `process-exporter` observes the

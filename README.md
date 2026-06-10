@@ -107,7 +107,8 @@ BenchChef
 | 0.8.x   | DONE        | [Full Grafana observability dashboards](docs/TODOs/TODO.0.8-Grafana-Observability.md) |
 | 0.9.x   | IN PROGRESS | [Angular workbench UI](docs/TODOs/TODO.0.9-Angular-Workbench.md) |
 | 0.10.x  | IN PROGRESS | [Release packaging and remote install](docs/TODOs/TODO.0.10-Release.md) |
-| 0.11.x  | PLANNED     | [Benchmark scenario runner](docs/TODOs/TODO.0.11-Benchmark-Scenario-Runner.md) |
+| 0.11.x  | PLANNED     | [Windows system metrics](docs/TODOs/TODO.0.11-Windows-System-Metrics.md) |
+| 0.12.x  | PLANNED     | [Benchmark scenario runner](docs/TODOs/TODO.0.12-Benchmark-Scenario-Runner.md) |
 | 1.0.x   | PLANNED     | [BenchChef Central sync boundary](docs/TODOs/TODO.1.0-BenchChef-Central-Sync-Boundary.md) |
 | 1.1.x   | PLANNED     | [BenchChef Central backend](docs/TODOs/TODO.1.1-BenchChef-Central-Backend.md) |
 | 1.2.x   | PLANNED     | [BenchChef Central dashboards](docs/TODOs/TODO.1.2-BenchChef-Central-Dashboards.md) |

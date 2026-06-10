@@ -240,6 +240,13 @@ disk read/write throughput
 
 The 0.8 dashboard does not require any SpaghettiChef interface changes.
 
+On Windows release installs, Linux exporter panels such as host CPU, host RAM,
+filesystem, disk, and process metrics may be empty. The current Windows start
+script does not start `node_exporter` or `process-exporter`.
+
+Windows-native system metrics are planned in
+[TODO.0.11-Windows-System-Metrics.md](TODOs/TODO.0.11-Windows-System-Metrics.md).
+
 ## Prometheus Queries
 
 Grafana panels use PromQL.
