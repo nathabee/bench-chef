@@ -37,6 +37,92 @@ retry behavior for offline LANs
 payload validation
 ```
 
+## Repository Layout Direction
+
+Before implementing BenchChef Central, decide the repository layout so local
+and central code do not drift into the same folders.
+
+Preferred target shape:
+
+```text
+bench-chef/
+├── VERSION
+├── README.md
+├── .gitignore
+├── Jenkinsfile
+├── docs/
+├── tools/
+├── local/
+│   ├── backend-django/
+│   ├── frontend-angular/
+│   ├── prometheus/
+│   ├── grafana/
+│   ├── scripts/
+│   └── docker-compose.yml
+├── central/
+│   ├── backend-django/
+│   ├── frontend-angular/
+│   ├── prometheus/
+│   ├── grafana/
+│   ├── scripts/
+│   └── docker-compose.yml
+└── shared/
+    └── optional shared code later
+```
+
+Root-level files remain the project and release control layer:
+
+```text
+VERSION
+README
+docs
+tools/git-hooks
+Jenkinsfile
+release packaging
+global roadmap
+```
+
+`local/` should contain the current BenchChef Local application:
+
+```text
+local Django backend
+local Angular workbench
+local Prometheus and Grafana configuration
+local start/stop scripts
+local docker compose
+```
+
+`central/` should contain the future VPS application:
+
+```text
+central Django backend
+central Angular workbench
+central Prometheus and Grafana configuration
+central deployment scripts
+central docker compose
+```
+
+Do not mix central code into the existing local backend/frontend unless the
+design proves it is truly the same application. The current expectation is that
+they have different responsibilities:
+
+```text
+BenchChef Local   -> nearby SpaghettiChef observation and sync sender
+BenchChef Central -> multi-farm registry, import, history, and dashboard layer
+```
+
+Keep root scripts as friendly wrappers if useful:
+
+```text
+scripts/start-local.sh
+scripts/stop-local.sh
+scripts/start-central.sh
+scripts/stop-central.sh
+```
+
+The layout migration should happen before central implementation work starts,
+but after the local release/install flow is stable.
+
 ## Reserved API Direction
 
 These names are draft placeholders for the central sync contract. Keep them
