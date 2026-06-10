@@ -21,5 +21,11 @@ if (-not (Test-Path -LiteralPath (Join-Path $AppDir 'docker-compose.yml'))) {
 }
 
 Set-Location $AppDir
-docker compose down
+$ComposeEnvPath = Join-Path $AppDir '.compose.env'
+if (Test-Path -LiteralPath $ComposeEnvPath) {
+    docker compose --env-file $ComposeEnvPath down
+}
+else {
+    docker compose down
+}
 Write-Host "BenchChef stopped."

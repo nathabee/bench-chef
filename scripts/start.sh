@@ -33,6 +33,17 @@ window.BenchChefConfig = {
 EOF
 }
 
+write_compose_env() {
+  local config_file="$1"
+
+  cat > "$config_file" <<EOF
+PROMETHEUS_PORT=$PROMETHEUS_PORT
+GRAFANA_PORT=$GRAFANA_PORT
+NODE_EXPORTER_PORT=$NODE_EXPORTER_PORT
+PROCESS_EXPORTER_PORT=$PROCESS_EXPORTER_PORT
+EOF
+}
+
 stop_pid_file() {
   local label="$1"
   local pid_file="$2"
@@ -65,7 +76,8 @@ else
 fi
 
 cd "$ROOT_DIR"
-docker compose up -d
+write_compose_env "$ROOT_DIR/.compose.env"
+docker compose --env-file "$ROOT_DIR/.compose.env" up -d
 
 cd "$ROOT_DIR/backend-django"
 if [ ! -d .venv ]; then
@@ -132,7 +144,7 @@ echo $! > /tmp/benchchef-frontend.pid
 
 echo "Waiting for BenchChef backend on port $BENCHCHEF_BACKEND_PORT..."
 
-until curl -fsS "http://localhost:$BENCHCHEF_BACKEND_PORT/" >/dev/null 2>&1; do
+until curl -fsS "http://localhost:$BENCHCHEF_BACKEND_PORT/metrics" >/dev/null 2>&1; do
   sleep 1
 done
 

@@ -12,6 +12,7 @@ env/
 *.sqlite3
 db.sqlite3
 .env
+.compose.env
 
 # Node / Angular
 node_modules/

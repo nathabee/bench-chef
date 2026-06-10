@@ -7,6 +7,7 @@ $LogDir = Join-Path $Root 'log'
 $RunLog = Join-Path $LogDir 'start.log'
 $EnvPath = Join-Path $DataDir 'run.env'
 $AppEnvPath = Join-Path $AppDir '.env'
+$ComposeEnvPath = Join-Path $AppDir '.compose.env'
 
 function Read-RunEnv {
     param(
@@ -62,6 +63,25 @@ window.BenchChefConfig = {
   spaghettiChefUrl: '$spaghettiChefUrl',
 };
 "@ | Set-Content -LiteralPath $Path -Encoding UTF8
+}
+
+function Write-ComposeEnv {
+    param(
+        [string]$Path,
+        [hashtable]$Values
+    )
+
+    $prometheusPort = EnvValue $Values 'PROMETHEUS_PORT' '18073'
+    $grafanaPort = EnvValue $Values 'GRAFANA_PORT' '18074'
+    $nodeExporterPort = EnvValue $Values 'NODE_EXPORTER_PORT' '18075'
+    $processExporterPort = EnvValue $Values 'PROCESS_EXPORTER_PORT' '18076'
+
+    @"
+PROMETHEUS_PORT=$prometheusPort
+GRAFANA_PORT=$grafanaPort
+NODE_EXPORTER_PORT=$nodeExporterPort
+PROCESS_EXPORTER_PORT=$processExporterPort
+"@ | Set-Content -LiteralPath $Path -Encoding ASCII
 }
 
 function Start-BackgroundProcess {
@@ -122,6 +142,7 @@ $frontendPort = EnvValue $values 'BENCHCHEF_FRONTEND_PORT' '18072'
 $spaghettiChefUrl = (EnvValue $values 'SPAGHETTICHEF_BASE_URL' 'http://localhost:18080').TrimEnd('/')
 
 Copy-Item -LiteralPath $EnvPath -Destination $AppEnvPath -Force
+Write-ComposeEnv -Path $ComposeEnvPath -Values $values
 
 "[$(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')] starting BenchChef" | Add-Content -LiteralPath $RunLog
 
@@ -135,7 +156,7 @@ catch {
 }
 
 Set-Location $AppDir
-docker compose up -d --no-deps prometheus grafana | Tee-Object -FilePath $RunLog -Append
+docker compose --env-file $ComposeEnvPath up -d --no-deps prometheus grafana | Tee-Object -FilePath $RunLog -Append
 
 $backendDir = Join-Path $AppDir 'backend-django'
 $managePy = Join-Path $backendDir 'manage.py'
@@ -189,7 +210,7 @@ $healthy = $false
 for ($i = 0; $i -lt 30; $i++) {
     Start-Sleep -Seconds 1
     try {
-        $resp = Invoke-WebRequest -Uri "http://localhost:$backendPort/" -UseBasicParsing -TimeoutSec 2
+        $resp = Invoke-WebRequest -Uri "http://localhost:$backendPort/metrics" -UseBasicParsing -TimeoutSec 2
         if ($resp.StatusCode -eq 200) {
             $healthy = $true
             break

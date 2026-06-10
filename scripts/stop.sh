@@ -34,6 +34,10 @@ stop_pid_file "Django" /tmp/benchchef-backend.pid
 echo "Stopping Docker containers..."
 
 cd "$ROOT_DIR"
-docker compose down
+if [ -f "$ROOT_DIR/.compose.env" ]; then
+    docker compose --env-file "$ROOT_DIR/.compose.env" down
+else
+    docker compose down
+fi
 
 echo "Done."
