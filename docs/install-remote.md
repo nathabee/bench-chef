@@ -315,6 +315,30 @@ Verify:
 C:\benchchef\bin\v.ps1
 ```
 
+Check Django migrations manually:
+
+```powershell
+cd C:\benchchef\app\backend-django
+.\.venv\Scripts\python.exe manage.py showmigrations
+```
+
+BenchChef runs migrations automatically during `r.ps1`, but this command is a
+useful install check.
+
+BenchChef does not create a default Django admin user or password. Create one
+only if you want to use the Django admin UI:
+
+```powershell
+cd C:\benchchef\app\backend-django
+.\.venv\Scripts\python.exe manage.py createsuperuser
+```
+
+Then open:
+
+```text
+http://localhost:18071/admin/
+```
+
 Open:
 
 ```text

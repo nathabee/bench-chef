@@ -203,6 +203,31 @@ Verify:
 ./scripts/ps.sh
 ```
 
+Check Django migrations manually:
+
+```bash
+cd backend-django
+. .venv/bin/activate
+python manage.py showmigrations
+cd ..
+```
+
+BenchChef does not create a default Django admin user or password. Create one
+only if you want to use the Django admin UI:
+
+```bash
+cd backend-django
+. .venv/bin/activate
+python manage.py createsuperuser
+cd ..
+```
+
+Then open:
+
+```text
+http://localhost:18071/admin/
+```
+
 Stop:
 
 ```bash
@@ -233,11 +258,35 @@ C:\benchchef\
 Short version:
 
 ```text
-extract bench-chef-<version>-windows.zip into C:\benchchef\app
-copy admin\win\* from bench-chef-<version>-admin.zip into C:\benchchef\bin
-copy C:\benchchef\bin\run.env.example to C:\benchchef\data\run.env
+extract bench-chef-<version>-admin.zip into C:\
+extract bench-chef-<version>-windows.zip into C:\
+copy C:\benchchef\data\run.env.example to C:\benchchef\data\run.env if missing
 run C:\benchchef\bin\r.ps1
 run C:\benchchef\bin\v.ps1
+```
+
+Do not extract either Windows zip into `C:\benchchef`. The archives already
+contain the `benchchef\...` directory structure.
+
+Check Django migrations manually on Windows:
+
+```powershell
+cd C:\benchchef\app\backend-django
+.\.venv\Scripts\python.exe manage.py showmigrations
+```
+
+BenchChef does not create a default Django admin user or password. Create one
+only if you want to use the Django admin UI:
+
+```powershell
+cd C:\benchchef\app\backend-django
+.\.venv\Scripts\python.exe manage.py createsuperuser
+```
+
+Then open:
+
+```text
+http://localhost:18071/admin/
 ```
 
 For the full Windows bootstrap, scheduled task setup, remote update, and Linux
