@@ -94,10 +94,13 @@ OpenSSH Server, if remote administration is wanted
 Git is optional
 ```
 
-BenchChef uses Docker Compose for Prometheus, Grafana, node-exporter, and
-process-exporter. The BenchChef app package contains the Django backend source,
-the built Angular frontend, scripts, dashboards, and documentation. BenchChef
-does not ship a jar.
+BenchChef uses Docker Compose for Prometheus and Grafana on Windows. The Linux
+host exporters from the development compose file are not started by `r.ps1`
+because their host filesystem mounts are Linux-specific and do not work on
+Docker Desktop Windows.
+
+The BenchChef app package contains the Django backend source, the built Angular
+frontend, scripts, dashboards, and documentation. BenchChef does not ship a jar.
 
 ### Install Docker Desktop
 

@@ -135,9 +135,10 @@ catch {
 }
 
 Set-Location $AppDir
-docker compose up -d | Tee-Object -FilePath $RunLog -Append
+docker compose up -d --no-deps prometheus grafana | Tee-Object -FilePath $RunLog -Append
 
 $backendDir = Join-Path $AppDir 'backend-django'
+$managePy = Join-Path $backendDir 'manage.py'
 $venvPython = Join-Path $backendDir '.venv\Scripts\python.exe'
 $requirementsMarker = Join-Path $backendDir '.venv\.benchchef-requirements-installed'
 
@@ -154,15 +155,15 @@ if (-not (Test-Path -LiteralPath $requirementsMarker)) {
 }
 
 Write-Host "Applying BenchChef database migrations..."
-& $venvPython manage.py migrate --noinput
+& $venvPython $managePy migrate --noinput
 
 Write-Host "Initializing default SpaghettiChef connection profile..."
-& $venvPython manage.py init_default_connection
+& $venvPython $managePy init_default_connection
 
 Start-BackgroundProcess `
     -Name 'BenchChef backend' `
     -FilePath $venvPython `
-    -ArgumentList @('manage.py', 'runserver', "0.0.0.0:$backendPort") `
+    -ArgumentList @($managePy, 'runserver', "0.0.0.0:$backendPort") `
     -WorkingDirectory $backendDir `
     -LogPath (Join-Path $LogDir 'backend.log') `
     -PidPath (Join-Path $DataDir 'benchchef-backend.pid')
