@@ -233,6 +233,12 @@ Review `C:\benchchef\data\run.env` and adjust ports if needed.
 
 `C:\benchchef\data\run.env` is the file you edit and keep.
 
+The Django SQLite database is also stored in `C:\benchchef\data`:
+
+```text
+C:\benchchef\data\db.sqlite3
+```
+
 At start time, `C:\benchchef\bin\r.ps1` copies it to:
 
 ```text

@@ -109,6 +109,40 @@ function Start-BackgroundProcess {
     Write-Host "$Name started with PID $($process.Id)."
 }
 
+function Stop-PidFile {
+    param(
+        [string]$Path
+    )
+
+    if (Test-Path -LiteralPath $Path) {
+        $processId = Get-Content -LiteralPath $Path -ErrorAction SilentlyContinue
+        if ($processId) {
+            Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+        }
+        Remove-Item -LiteralPath $Path -Force -ErrorAction SilentlyContinue
+    }
+}
+
+function Stop-PortListener {
+    param(
+        [string]$Name,
+        [string]$Port
+    )
+
+    if (-not $Port) {
+        return
+    }
+
+    $connections = Get-NetTCPConnection -LocalPort $Port -State Listen -ErrorAction SilentlyContinue
+    foreach ($connection in $connections) {
+        $processId = $connection.OwningProcess
+        if ($processId) {
+            Write-Host "Stopping stale $Name listener on port $Port with PID $processId."
+            Stop-Process -Id $processId -Force -ErrorAction SilentlyContinue
+        }
+    }
+}
+
 New-Item -ItemType Directory -Force -Path $DataDir | Out-Null
 New-Item -ItemType Directory -Force -Path $LogDir | Out-Null
 
@@ -140,6 +174,11 @@ $values = Read-RunEnv $EnvPath
 $backendPort = EnvValue $values 'BENCHCHEF_BACKEND_PORT' '18071'
 $frontendPort = EnvValue $values 'BENCHCHEF_FRONTEND_PORT' '18072'
 $spaghettiChefUrl = (EnvValue $values 'SPAGHETTICHEF_BASE_URL' 'http://localhost:18080').TrimEnd('/')
+
+Stop-PidFile (Join-Path $DataDir 'benchchef-backend.pid')
+Stop-PidFile (Join-Path $DataDir 'benchchef-frontend.pid')
+Stop-PortListener 'BenchChef backend' $backendPort
+Stop-PortListener 'BenchChef frontend' $frontendPort
 
 Copy-Item -LiteralPath $EnvPath -Destination $AppEnvPath -Force
 Write-ComposeEnv -Path $ComposeEnvPath -Values $values
@@ -184,7 +223,7 @@ Write-Host "Initializing default SpaghettiChef connection profile..."
 Start-BackgroundProcess `
     -Name 'BenchChef backend' `
     -FilePath $venvPython `
-    -ArgumentList @($managePy, 'runserver', "0.0.0.0:$backendPort") `
+    -ArgumentList @($managePy, 'runserver', "0.0.0.0:$backendPort", '--noreload') `
     -WorkingDirectory $backendDir `
     -LogPath (Join-Path $LogDir 'backend.log') `
     -PidPath (Join-Path $DataDir 'benchchef-backend.pid')

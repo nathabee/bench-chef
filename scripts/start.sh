@@ -76,6 +76,7 @@ else
 fi
 
 cd "$ROOT_DIR"
+mkdir -p "$ROOT_DIR/data"
 write_compose_env "$ROOT_DIR/.compose.env"
 docker compose --env-file "$ROOT_DIR/.compose.env" up -d
 
@@ -102,6 +103,7 @@ python manage.py init_default_connection
 
 nohup python manage.py runserver \
   0.0.0.0:"$BENCHCHEF_BACKEND_PORT" \
+  --noreload \
   > backend.log 2>&1 &
 
 echo $! > /tmp/benchchef-backend.pid

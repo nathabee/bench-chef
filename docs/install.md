@@ -159,6 +159,7 @@ Review `.env`, especially:
 
 ```text
 BENCHCHEF_SECRET_KEY
+BENCHCHEF_DB_PATH
 SPAGHETTICHEF_BASE_URL
 BENCHCHEF_BACKEND_PORT
 BENCHCHEF_FRONTEND_PORT
@@ -168,6 +169,12 @@ GRAFANA_PORT
 
 Change `BENCHCHEF_SECRET_KEY` for any persistent install. The value in
 `.env.example` is only a local development placeholder.
+
+`BENCHCHEF_DB_PATH` should point to persistent local data, for example:
+
+```text
+./data/db.sqlite3
+```
 
 Start:
 
